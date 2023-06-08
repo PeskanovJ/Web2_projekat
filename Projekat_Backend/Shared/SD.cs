@@ -11,7 +11,7 @@ namespace Shared
         [Flags]
         public enum Roles : byte
         {
-            User = 1,
+            Buyer = 1,
             Seller = 2,
             Admin = 3
         }
