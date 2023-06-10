@@ -11,13 +11,14 @@ namespace BLL.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<ResponsePackage<bool>> RegisterAdmin(AdminDTO userDTO);
-        Task<ResponsePackage<bool>> RegisterUser(UserDTO userDTO,SD.Roles Role);
+        ResponsePackage<bool> RegisterAdmin(UserDTO userDTO);
+        Task<ResponsePackage<bool>> RegisterUser(UserDTO userDTO,SD.Roles Role, string file);
         ResponsePackage<ProfileDTO> LoginUser(LoginDTO loginDTO);
-        ResponsePackage<bool> VerifyUser(long id);
-        Task<ResponsePackage<bool>> ForgotPassword(string email);
+        Task<ResponsePackage<bool>> VerifyUser(VerificationDTO verificationDTO);
+        Task<ResponsePackage<bool>> DenyUser(VerificationDTO verificationDTO);
         ResponsePackage<bool> ResetPassword(PasswordResetDTO passwordResetDTO);
         ResponsePackage<ProfileDTO> GetProfile(string email);
         ResponsePackage<bool> UpdateProfile(ProfileDTO profileDTO);
+        ResponsePackage<List<ProfileDTO>> GetVerified();
     }
 }

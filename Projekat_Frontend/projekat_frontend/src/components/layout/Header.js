@@ -1,4 +1,5 @@
 import React,{Fragment,useContext} from 'react'
+import {Link} from 'react-router-dom'
 
 import classes from './Header.module.css'
 import HeaderCartButton from './HeaderCartButton'
@@ -8,29 +9,78 @@ import Button from '../UI/Button/Button'
 const Header = (props) => {
   const ctx = useContext(AuthContext);
 
+  const LogoutHandler = () => {
+    ctx.onLogout();
+  };
+
   return (
     <Fragment>
         <header className={classes.header}>
+          <div className={classes.content}>
             <h1>eShop</h1>
+            
+          
             <nav className={classes.nav}>
               <ul>
-                {!ctx.isLoggedIn && (
-                    <Button onClick={props.onShowLoginForm}>Login</Button>
-             )}
-                {!ctx.isLoggedIn && (
-                  <Button className onClick={props.onShowRegisterForm}>Register</Button>
-                )}
-              </ul>
-            </nav>
-            {ctx.isLoggedIn ? (
-              <div className={classes.rightContent}>
-              {ctx.user.Role == 1 ? (<HeaderCartButton onClick={props.onShowCart}/>) : null}
-             <span> {ctx.user.FirstName} {ctx.user.LastName}</span>
-              <Button onClick={props.onShowProfile}>Profile</Button>
-              </div>
-            ):null}
+                <Link to="/">
+                  <Button>Home</Button>
+                </Link>
+                  { ctx.isLoggedIn  ? ( 
+                  <>
+                    {ctx.user.Role == 1 ? (
+                    <Link to="/myOrders">
+                      <Button >My orders</Button>
+                    </Link>) : null}
+                    {(ctx.user.Role == 2 && ctx.user.IsVerified ) ? (
+                    <>
+                      <Link to="/addNew">
+                        <Button>New item</Button>
+                      </Link>
+
+                      <Link to="/newOrders">
+                        <Button>New orders</Button>
+                      </Link>
+
+                      <Link to="/myItems">
+                        <Button>My items</Button>
+                      </Link>
+                    </>
+                    ):null}
+                    {(ctx.user.Role == 3 ) ? (
+                    <>
+                      <Link to="/allOrders">
+                        <Button>All orders</Button>
+                      </Link>
+
+                      <Link to="/verification">
+                        <Button>User verification</Button>
+                      </Link>
+                    </>
+                    ):null}
+                  </>
+                  ) : null}
+            </ul>
+          </nav>
+          </div>
+          <div className={classes.content}>
+          {ctx.isLoggedIn ? (
+          <>
+            {ctx.user.Role == 1 ? (<HeaderCartButton onClick={props.onShowCart}/>) : null}
+            <span> {ctx.user.FirstName} {ctx.user.LastName}</span>
+            <Link to="/profile">
+            <Button onClick={props.onShowProfile}>Profile</Button>
+            </Link>
+            <Button onClick={LogoutHandler}>Logout</Button>
+          </>
+          )
+          :(
+          <>
+            <Button onClick={props.onShowLoginForm}>Login</Button>
+            <Button className onClick={props.onShowRegisterForm}>Register</Button>
+          </>
+          )}
+            </div>
         </header>
-        
     </Fragment>
   )
 }

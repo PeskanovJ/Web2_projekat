@@ -18,6 +18,7 @@ namespace Shared.Constants
         AccountNotActivated = 1002,
         InvalidPasswordGuid = 1003,
         AccountAlreadyActivated = 1004,
+        AllUsersVerified = 1005,
        
     }
 }

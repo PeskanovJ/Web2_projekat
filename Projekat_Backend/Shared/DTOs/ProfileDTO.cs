@@ -16,5 +16,7 @@ namespace Shared.DTOs
         public string Address { get; set; }
         public string Token { get; set; }
         public SD.Roles Role { get; set; }
+        public bool IsVerified { get; set; }
+        public string ProfileUrl { get; set; }
     }
 }

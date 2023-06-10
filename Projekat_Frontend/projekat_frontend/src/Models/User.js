@@ -1,5 +1,5 @@
 class User {
-  constructor({userName, email,firstName,lastName,birthDate,address,token,role}) {
+  constructor({userName, email,firstName,lastName,birthDate,address,token,role,isVerified,profileUrl}) {
     this.UserName= userName;
     this.Email= email;
     this.FirstName=firstName;
@@ -8,6 +8,8 @@ class User {
     this.Address = address;
     this.Token= token;
     this.Role= role;
+    this.IsVerified = isVerified;
+    this.ProfileUrl = profileUrl;
   }
   
 }

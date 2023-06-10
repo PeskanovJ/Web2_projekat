@@ -34,22 +34,112 @@ namespace BLL.Services.Implementations
             _mapper = mapper;
             _secretKey = _configuration.GetSection("SecretKey");
         }
-
-        public ResponsePackage<bool> VerifyUser(long id)
+        private bool MailExists(string email)
         {
-            User u = _uow.User.GetFirstOrDefault(u => u.Id == id);
+            User u = _uow.User.GetFirstOrDefault(u => u.Email == email);
             if (u != null)
-            {
-                u.IsVerified = true;
-            }
+                return true;
             else
-                return new ResponsePackage<bool>(false, ResponseStatus.AccountAlreadyActivated, "Account already verified");
-            _uow.User.Update(u);
-            _uow.Save();
-
-            return new ResponsePackage<bool>(true, ResponseStatus.OK, "Account verified");
+                return false;
+        }
+        private bool UsernameExists(string username)
+        {
+            User u = _uow.User.GetFirstOrDefault(u => u.UserName == username);
+            if (u != null)
+                return true;
+            else
+                return false;
         }
 
+        public async Task<ResponsePackage<bool>> RegisterUser(UserDTO userDTO,SD.Roles Role, string file)
+        {
+            if (MailExists(userDTO.Email))
+            {
+                return new ResponsePackage<bool>(false, ResponseStatus.InvalidEmail, "Email already exists");
+            }
+            if (UsernameExists(userDTO.UserName))
+            {
+                return new ResponsePackage<bool>(false, ResponseStatus.InvalidUsername, "Username already exists");
+            }
+
+            User newUser = _mapper.Map<User>(userDTO);
+            
+            byte[] salt = PasswordHasher.GenerateSalt();
+            newUser.Salt = salt;
+            newUser.Password = PasswordHasher.GenerateSaltedHash(Encoding.ASCII.GetBytes(userDTO.Password), salt);
+            newUser.ProfileUrl = file;
+            string emailContent;
+            if (Role == SD.Roles.Buyer)
+            {
+                newUser.IsVerified = true;
+                newUser.Role = SD.Roles.Buyer;
+                emailContent = $"<p>Zdravo {newUser.FirstName} {newUser.LastName},</p>";
+                emailContent += $"<p>Vas nalog je uspešno napravljen. Zelimo vam srecnu kupovinu.</p>";
+            }
+            else
+            {
+                newUser.Role = SD.Roles.Seller;
+                newUser.IsVerified = false;
+                emailContent = $"<p>Zdravo {newUser.FirstName} {newUser.LastName},</p>";
+                emailContent += $"<p>Vas nalog je uspešno napravljen. Molimo vas da sačekate da neko od naših administratora pregleda i odobri vaš profil.</p>";
+                emailContent += $"<p>Dobićete email obaveštenja kada nalog bude pregledan.</p>";
+            }
+            
+            try
+            {
+                _uow.User.Add(newUser);
+                _uow.Save();
+
+                var success = await _emailService.SendMailAsync(new EmailData()
+                {
+                    To = newUser.Email,
+                    Content = emailContent,
+                    IsContentHtml = true,
+                    Subject = "Aktivacija naloga"
+                });
+
+                if (success)
+                    return new ResponsePackage<bool>(true, ResponseStatus.OK, "User registered succesfully");
+                else
+                    return new ResponsePackage<bool>(false, ResponseStatus.InternalServerError, "There was an error while registering new user");
+            }
+            catch (Exception ex)
+            {
+                return new ResponsePackage<bool>(false, ResponseStatus.InternalServerError, ex.Message);
+            }
+        }
+        public ResponsePackage<bool> RegisterAdmin(UserDTO userDTO)
+        {
+            if (MailExists(userDTO.Email))
+            {
+                return new ResponsePackage<bool>(false, ResponseStatus.InvalidEmail, "Email already exists");
+            }
+            if (UsernameExists(userDTO.UserName))
+            {
+                return new ResponsePackage<bool>(false, ResponseStatus.InvalidUsername, "Username already exists");
+            }
+
+            User newUser = _mapper.Map<User>(userDTO);
+
+            byte[] salt = PasswordHasher.GenerateSalt();
+            newUser.Salt = salt;
+            newUser.Password = PasswordHasher.GenerateSaltedHash(Encoding.ASCII.GetBytes(userDTO.Password), salt);
+            newUser.Role = SD.Roles.Admin;
+            newUser.IsVerified = true;
+
+            newUser.ProfileUrl = Path.Combine(Directory.GetCurrentDirectory(), "Avatars");
+            newUser.ProfileUrl = Path.Combine(newUser.ProfileUrl, "avatar.svg"); 
+            try
+            {
+                _uow.User.Add(newUser);
+                _uow.Save();
+                return new ResponsePackage<bool>(true, ResponseStatus.OK, "User registered succesfully");
+            }
+            catch (Exception ex)
+            {
+                return new ResponsePackage<bool>(false, ResponseStatus.InternalServerError, ex.Message);
+            }
+        }
         public ResponsePackage<ProfileDTO> LoginUser(LoginDTO loginDTO)
         {
             User u = _uow.User.GetFirstOrDefault(u => u.Email == loginDTO.Email);
@@ -87,178 +177,93 @@ namespace BLL.Services.Implementations
             else
                 return new ResponsePackage<ProfileDTO>(null, ResponseStatus.NotFound, "This user does not exist");
         }
-       
-
-        private bool MailExists(string email)
+        public ResponsePackage<List<ProfileDTO>> GetVerified()
         {
-            User u = _uow.User.GetFirstOrDefault(u => u.Email == email);
-            if (u != null)
-                return true;
+            List<User> notVerified = _uow.User.GetAll(u => !u.IsVerified).ToList();
+            if(notVerified.Count == 0)
+                return new ResponsePackage<List<ProfileDTO>>(null, ResponseStatus.AllUsersVerified, "All users are verified");
             else
-                return false;
-        }
-        private bool UsernameExists(string username)
-        {
-            User u = _uow.User.GetFirstOrDefault(u => u.UserName == username);
-            if (u != null)
-                return true;
-            else
-                return false;
-        }
-
-        private bool AccountVerified(string email)
-        {
-            User u = _uow.User.GetFirstOrDefault(u => u.Email == email);
-            if (u.IsVerified)
-                return true;
-            else
-                return false;
-        }
-
-        public async Task<ResponsePackage<bool>> RegisterUser(UserDTO userDTO,SD.Roles Role)
-        {
-            if (MailExists(userDTO.Email))
             {
-                return new ResponsePackage<bool>(false, ResponseStatus.InvalidEmail, "Email already exists");
+                List<ProfileDTO> response = new List<ProfileDTO>();
+                foreach(var elem in notVerified)
+                {
+                    response.Add(_mapper.Map<ProfileDTO>(elem));
+                }
+                return new ResponsePackage<List<ProfileDTO>>(response, ResponseStatus.OK);
             }
-            if (UsernameExists(userDTO.UserName))
-            {
-                return new ResponsePackage<bool>(false, ResponseStatus.InvalidUsername, "Username already exists");
-            }
+        }
 
-            User newUser = _mapper.Map<User>(userDTO);
+        public async Task<ResponsePackage<bool>> VerifyUser(VerificationDTO verificationDTO)
+        {
+            User u = _uow.User.GetFirstOrDefault(u => u.UserName == verificationDTO.UserName);
+            if (u == null)
+            {
+                return new ResponsePackage<bool>(false, ResponseStatus.NotFound);
+            }
+            u.IsVerified = true;
+            string emailContent = $"<p>Zdravo {u.FirstName} {u.LastName},</p>";
+            emailContent += $"<p>Vas nalog je verifikovan. Zahvaljujemo vam se na strpljenju.</p>";
             
-            byte[] salt = PasswordHasher.GenerateSalt();
-            newUser.Salt = salt;
-            newUser.Password = PasswordHasher.GenerateSaltedHash(Encoding.ASCII.GetBytes(userDTO.Password), salt);
-
-            string emailContent;
-            if (Role == SD.Roles.Buyer)
-            {
-                newUser.IsVerified = true;
-                newUser.Role = SD.Roles.Buyer;
-                emailContent = $"<p>Zdravo {newUser.FirstName} {newUser.LastName},</p>";
-                emailContent += $"<p>Vas nalog je uspešno napravljen. Zelimo vam srecnu kupovinu.</p>";
-            }
-            else
-            {
-                newUser.Role = SD.Roles.Seller;
-                newUser.IsVerified = false;
-                emailContent = $"<p>Zdravo {newUser.FirstName} {newUser.LastName},</p>";
-                emailContent += $"<p>Vas nalog je uspešno napravljen. Molimo vas da sačekate da neko od naših administratora pregleda i odobri vaš profil.</p>";
-                emailContent += $"<p>Dobićete email obaveštenja kada nalog bude pregledan.</p>";
-            }
-            newUser.ProfileUrl = @"\img\profilePictures\img_avatar.png";
             try
             {
-                _uow.User.Add(newUser);
+                _uow.User.Update(u);
                 _uow.Save();
 
                 var success = await _emailService.SendMailAsync(new EmailData()
                 {
-                    To = newUser.Email,
+                    To = u.Email,
                     Content = emailContent,
                     IsContentHtml = true,
-                    Subject = "Aktivacija naloga"
+                    Subject = "Verifikacija naloga"
                 });
 
                 if (success)
-                    return new ResponsePackage<bool>(true, ResponseStatus.OK, "User registered succesfully");
+                    return new ResponsePackage<bool>(true, ResponseStatus.OK, "User verified succesfully");
                 else
-                    return new ResponsePackage<bool>(false, ResponseStatus.InternalServerError, "There was an error while registering new user");
+                    return new ResponsePackage<bool>(false, ResponseStatus.InternalServerError, "There was an error while verifying user");
             }
             catch (Exception ex)
             {
                 return new ResponsePackage<bool>(false, ResponseStatus.InternalServerError, ex.Message);
             }
         }
-        public async Task<ResponsePackage<bool>> RegisterAdmin(AdminDTO userDTO)
+
+        public async Task<ResponsePackage<bool>> DenyUser(VerificationDTO verificationDTO)
         {
-            //if (MailExists(userDTO.Email))
-            //{
-            //    return new ResponsePackage<bool>(false, ResponseStatus.InvalidEmail, "Email already exists");
-            //}
-            //if (PhoneExists(userDTO.PhoneNumber))
-            //{
-            //    return new ResponsePackage<bool>(false, ResponseStatus.InvalidPhoneNo, "Phone number already exists");
-            //}
-
-            //User newUser = new User();
-            //newUser.FirstName = userDTO.FirstName;
-            //newUser.LastName = userDTO.LastName;
-            //newUser.Email = userDTO.Email;
-            //newUser.PhoneNumber = userDTO.PhoneNumber;
-            //newUser.Role = SD.Roles.Admin;
-            //newUser.Created = DateTime.Now;
-            //newUser.ActivationGuid = Guid.NewGuid();
-            //newUser.PasswordGuid = Guid.NewGuid();
-            //newUser.ProfileUrl = @"\img\profilePictures\img_avatar.png";
-            //byte[] salt = PasswordHasher.GenerateSalt();
-            //newUser.Salt = salt;
-            //newUser.Password = PasswordHasher.GenerateSaltedHash(Encoding.ASCII.GetBytes(newUser.PasswordGuid.ToString()), salt);
-            //try
-            //{
-            //    _uow.User.Add(newUser);
-            //    _uow.Save();
-
-            //    var emailContent = $"<p>Zdravo {newUser.FirstName} {newUser.LastName},</p>";
-            //    emailContent += $"<p>Vas nalog je uspešno napravljen. Kliknite na link ispod da biste ga aktivirali i postavili lozinku.</p>";
-            //    emailContent += $"<a href='{_configuration["ResetPasswordUrl"]}{newUser.PasswordGuid}'>Aktiviraj nalog</a>";
-
-            //    var success = await _emailService.SendMailAsync(new Shared.Common.EmailData()
-            //    {
-            //        To = newUser.Email,
-            //        Content = emailContent,
-            //        IsContentHtml = true,
-            //        Subject = "Aktivacija naloga"
-            //    });
-
-            //    if (success)
-            //        return new ResponsePackage<bool>(success, ResponseStatus.OK, "User registered succesfully");
-            //    else
-            //        return new ResponsePackage<bool>(success, ResponseStatus.InternalServerError, "There was an error while registering new user");
-            //}
-            //catch (Exception ex)
-            //{
-                return new ResponsePackage<bool>(false, ResponseStatus.InternalServerError,"aaa" /*ex.Message*/);
-            //}
-
-        }
-
-        public async Task<ResponsePackage<bool>> ForgotPassword(string email)
-        {
-            if (MailExists(email))
+            User u = _uow.User.GetFirstOrDefault(u => u.UserName == verificationDTO.UserName);
+            if (u == null)
             {
-                if (AccountVerified(email))
-                {
-                    User u = _uow.User.GetFirstOrDefault(u => u.Email == email);
-                    u.PasswordGuid = Guid.NewGuid();
-                    _uow.User.Update(u);
-                    _uow.Save();
-
-                    var emailContent = $"<p>Zdravo {u.FirstName} {u.LastName},</p>";
-                    emailContent += $"<p>Vas nalog je uspešno napravljen. Kliknite na link ispod da biste ga aktivirali.</p>";
-                    emailContent += $"<a href='{_configuration["ResetPasswordUrl"]}{u.PasswordGuid}'>Resetuj lozinku</a>";
-
-                    var success = await _emailService.SendMailAsync(new Shared.Common.EmailData()
-                    {
-                        To = u.Email,
-                        Content = emailContent,
-                        IsContentHtml = true,
-                        Subject = "Reset lozinke"
-                    });
-
-                    if (success)
-                        return new ResponsePackage<bool>(success, ResponseStatus.OK, "Reset mail sent");
-                    else
-                        return new ResponsePackage<bool>(success, ResponseStatus.InternalServerError, "There was an error");
-                }
-                else return new ResponsePackage<bool>(false, ResponseStatus.AccountNotActivated, "Account is not activated");
-
+                return new ResponsePackage<bool>(false, ResponseStatus.NotFound);
             }
-            else
-                return new ResponsePackage<bool>(false, ResponseStatus.InvalidEmail, "Mail does not exist");
+
+            string emailContent = $"<p>Zdravo {u.FirstName} {u.LastName},</p>";
+            emailContent += $"<p>Vas nalog je odbijen iz razloga {verificationDTO.Reason}. </p>";
+
+            try
+            {
+                _uow.User.Remove(u);
+                _uow.Save();
+
+                var success = await _emailService.SendMailAsync(new EmailData()
+                {
+                    To = u.Email,
+                    Content = emailContent,
+                    IsContentHtml = true,
+                    Subject = "Verifikacija naloga"
+                });
+
+                if (success)
+                    return new ResponsePackage<bool>(true, ResponseStatus.OK, "User denied");
+                else
+                    return new ResponsePackage<bool>(false, ResponseStatus.InternalServerError, "There was an error");
+            }
+            catch (Exception ex)
+            {
+                return new ResponsePackage<bool>(false, ResponseStatus.InternalServerError, ex.Message);
+            }
         }
+
+
 
         public ResponsePackage<bool> ResetPassword(PasswordResetDTO passwordResetDTO)
         {
@@ -303,5 +308,6 @@ namespace BLL.Services.Implementations
             return new ResponsePackage<bool>(true, ResponseStatus.OK, "Profile changed");
         }
 
+       
     }
 }

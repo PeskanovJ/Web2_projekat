@@ -72,33 +72,42 @@ const RegisterForm = (props) => {
   
     const submitHandler = async(event) => {
       event.preventDefault();
+      const formData = new FormData();
       if(formIsValid){
-        const User= { 
-          UserName: event.target.username.value,
-          Email: enteredEmail,
-          Password: enteredPassword,
-          FirstName: event.target.firstname.value,
-          LastName:  event.target.lastname.value,
-          BirthDate :  event.target.BirthDate.value,
-          Address : event.target.address.value,
-        };
+        formData.append('UserName', event.target.username.value);
+        formData.append('Email', enteredEmail);
+        formData.append('FirstName', event.target.firstname.value);
+        formData.append('Password', enteredPassword);
+        formData.append('LastName', event.target.lastname.value);
+        formData.append('BirthDate', event.target.BirthDate.value);
+        formData.append('Address', event.target.address.value);
+        if(event.target.avatar.files.length>0)
+          formData.append('file', event.target.avatar.files[0]);
+        
         let selectedOption = event.target.elements.accType.value;
-        console.log(selectedOption)
         try {
           if(selectedOption === 'Buyer'){
-            const response = await axios.post(process.env.REACT_APP_SERVER_URL+'users/registerBuyer', User);
-            console.log(response)
+            const response = await axios.post(process.env.REACT_APP_SERVER_URL+'users/registerBuyer', formData,
+            {
+              headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            alert(response.data)
+            props.onClose()
           }
           else
           {
-            const response = await axios.post(process.env.REACT_APP_SERVER_URL+'users/registerSeller', User);
-            console.log(response)
+            const response = await axios.post(process.env.REACT_APP_SERVER_URL+'users/registerSeller', formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            });
+            alert(response.data)
+            props.onClose()
           }
         } catch (error) {
           console.error(error);
-         
         }
-        authCtx.onRegister(enteredEmail, enteredPassword,enteredPasswordRepeat);
       }
       else if(!emailIsValid)
       {
@@ -126,7 +135,7 @@ const RegisterForm = (props) => {
         <Input ref={passwordRepeatInputRef} id='passwordRepeat' label='Repeat Password' type="password" isValid={passwordRepeatIsValid} value={enteredPasswordRepeat}  onChange={passwordRepeatChangeHandler} />
         <input type="radio" value="Buyer" name="accType" defaultChecked /> Kupac
         <input type="radio" value="Seller" name="accType" /> Prodavac
-        <Input type='file' label="Profile picture" id='profilePic'/>
+        <Input type='file' label="Profile picture" id='avatar'/>
         <div className={classes.actions}>
           <Button type="submit" className={classes.btn} >
             Register
