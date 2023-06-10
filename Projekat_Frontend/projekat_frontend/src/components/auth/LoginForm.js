@@ -1,10 +1,12 @@
 import React,{useState ,useEffect ,useReducer, useContext,useRef }  from "react";
+import axios from 'axios'
 
-import classes from "./LoginForm.module.css";
+import classes from "./Form.module.css";
 import Modal from "../UI/Modal/Modal";
 import AuthContext from "../../Contexts/auth-context";
 import Input from '../UI/Input/Input'
 import Button from "../UI/Button/Button";
+import User from '../../Models/User'
 
 const emailReducer=(state,action)=>{
     if(action.type === 'USER_INPUT')
@@ -23,7 +25,6 @@ const emailReducer=(state,action)=>{
   }
 
 const LoginForm = (props) => {
-
     const [formIsValid, setFormIsValid] = useState(false);
 
     const [emailState,dispatchEmail] = useReducer(emailReducer,{value:'',isValid:null});
@@ -67,10 +68,22 @@ const LoginForm = (props) => {
       dispatchPassword({type:'INPUT_BLUR'});
     };
   
-    const submitHandler = (event) => {
+    const submitHandler = async(event) => {
       event.preventDefault();
-      if(formIsValid)
-        authCtx.onLogin(emailState.value, passwordState.value);
+      if(formIsValid){
+        try{
+          const response = await axios.post(process.env.REACT_APP_SERVER_URL+'users/login', { 
+            Email: event.target.email.value,
+            Password: event.target.password.value,
+          });
+          const user = new User(response.data)
+          authCtx.onLogin(user);
+          props.onClose();
+        }
+        catch (error){
+          console.error(error);
+        }
+      }
       else if(!emailIsValid)
       {
         emailInputRef.current.focus();
@@ -86,7 +99,6 @@ const LoginForm = (props) => {
         <span>Login</span>
         <Input ref={emailInputRef} id='email' label='E-mail' type="email" isValid={emailIsValid} value={emailState.value}  onChange={emailChangeHandler} onBlur={validateEmailHandler}/>
         <Input ref={passwordInputRef} id='password' label='Password' type="password" isValid={passwordIsValid} value={passwordState.value}  onChange={passwordChangeHandler} onBlur={validatePasswordHandler}/>
-       
         <div className={classes.actions}>
           <Button type="submit" className={classes.btn} >
             Login

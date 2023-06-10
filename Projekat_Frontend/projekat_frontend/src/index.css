@@ -11,5 +11,12 @@ html {
 body {
   margin: 0;
   background-color: #3f3f3f;
+  
+  background-image: url("./assets/images/shop.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  
 }
 

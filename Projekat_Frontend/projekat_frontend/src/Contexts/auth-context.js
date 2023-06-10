@@ -1,15 +1,17 @@
 import React,{useState,useEffect} from 'react'
-import axios from 'axios';
 
 const AuthContext = React.createContext({
     isLoggedIn:false,
     onLoggout: ()=>{},
-    onLogin:(email,password)=>{},
+    onLogin:(user)=>{    
+    },
     onRegister:()=>{},
 });
 
 export const AuthContextProvider = (props) => {
     const [isLoggedIn,setIsLoggedIn] = useState(false);
+    const [user,setUser] = useState({});
+   
     
     useEffect(()=>{
         const storedUserLoggedInInformation = localStorage.getItem('isLoggedIn');
@@ -24,17 +26,11 @@ export const AuthContextProvider = (props) => {
         setIsLoggedIn(false);
     }
 
-    const loginHandler=()=>{
-        console.log(process.env.REACT_APP_SERVER_URL+'/login');
-        axios.get(process.env.REACT_APP_SERVER_URL+'/login')
-        .then(res=>{
-            console.log(res)
-        })
-        .catch(err=>{
-            console.log(err);
-        })
+    const loginHandler=(user)=>{
+        localStorage.setItem('token', user.Token);
         localStorage.setItem('isLoggedIn','1');
         setIsLoggedIn(true);
+        setUser(user);
     }
 
     const RegisterHandler=()=>{
@@ -44,7 +40,11 @@ export const AuthContextProvider = (props) => {
 
     return (
         <AuthContext.Provider
-        value={{isLoggedIn:isLoggedIn, onLogout: logoutHandler, onLogin: loginHandler, onRegister:RegisterHandler}}>
+        value={{isLoggedIn: isLoggedIn,
+            user:user,
+            onLogout: logoutHandler, 
+            onLogin: loginHandler, 
+            onRegister:RegisterHandler}}>
             {props.children}
         </AuthContext.Provider>
     )

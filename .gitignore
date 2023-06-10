@@ -1,4 +1,10 @@
 /node_modules
 /Projekat_Backend/.vs
-/Projekat_Backend/Projekat_Backend/wwwroot/lib
 /Projekat_Backend/Projekat_Backend/obj
+/Projekat_Backend/Projekat_Backend/bin
+/Projekat_Backend/BLL/obj
+/Projekat_Backend/BLL/bin
+/Projekat_Backend/DAL/obj
+/Projekat_Backend/DAL/bin
+/Projekat_Backend/Shared/obj
+/Projekat_Backend/Shared/bin

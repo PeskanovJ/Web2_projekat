@@ -1,5 +1,4 @@
 import React,{Fragment,useContext} from 'react'
-import image from '../../assets/images/shop.jpg'
 
 import classes from './Header.module.css'
 import HeaderCartButton from './HeaderCartButton'
@@ -23,13 +22,15 @@ const Header = (props) => {
                 )}
               </ul>
             </nav>
-            {ctx.isLoggedIn && (
-              <HeaderCartButton onClick={props.onShowCart}/>
-            )}
+            {ctx.isLoggedIn ? (
+              <div className={classes.rightContent}>
+              {ctx.user.Role == 1 ? (<HeaderCartButton onClick={props.onShowCart}/>) : null}
+             <span> {ctx.user.FirstName} {ctx.user.LastName}</span>
+              <Button onClick={props.onShowProfile}>Profile</Button>
+              </div>
+            ):null}
         </header>
-        <div className={classes['main-image']}>
-            <img src={image} alt='Best shop ever!'/>
-        </div>
+        
     </Fragment>
   )
 }

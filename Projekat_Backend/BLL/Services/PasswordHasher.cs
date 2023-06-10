@@ -17,10 +17,10 @@ namespace BLL.Services
             return salt;
         }
 
-        public static byte[] GenerateSaltedHash(byte[] password, byte[] salt)
+        public static string GenerateSaltedHash(byte[] password, byte[] salt)
         {
             HashAlgorithm algorithm = new SHA256Managed();
-
+            
             byte[] passwordWithSaltBytes = new byte[password.Length + salt.Length];
 
             for (int i = 0; i < password.Length; i++)
@@ -33,7 +33,7 @@ namespace BLL.Services
                 passwordWithSaltBytes[password.Length + i] = salt[i];
             }
 
-            return algorithm.ComputeHash(passwordWithSaltBytes);
+            return algorithm.ComputeHash(passwordWithSaltBytes).ToString();
         }
     }
 }

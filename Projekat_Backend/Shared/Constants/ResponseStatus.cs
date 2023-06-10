@@ -14,11 +14,10 @@ namespace Shared.Constants
         NotFound = 404,
         InternalServerError = 500,
         InvalidEmail = 1000,
-        InvalidPhoneNo = 1001,
+        InvalidUsername = 1001,
         AccountNotActivated = 1002,
         InvalidPasswordGuid = 1003,
-        CategoryNotFound = 1004,
-        AccountAlreadyActivated = 1005,
+        AccountAlreadyActivated = 1004,
        
     }
 }
