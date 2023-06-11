@@ -24,5 +24,6 @@ namespace DAL.Model
         public string ProfileUrl { get; set; } //putanja do profilne slike
 
         public List<Item> Items { get; set; }
+        public List<Order> Orders { get; set; }
     }
 }
