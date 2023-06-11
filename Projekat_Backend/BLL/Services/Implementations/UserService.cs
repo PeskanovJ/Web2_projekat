@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -169,6 +170,7 @@ namespace BLL.Services.Implementations
                     ProfileDTO p = _mapper.Map<ProfileDTO>(u);
                     p.Token = tokenString;
                     p.Role = u.Role;
+                    p.Avatar = DownloadPicture(u.ProfileUrl);
                     return new ResponsePackage<ProfileDTO>(p, ResponseStatus.OK, "Login successful");
                 }
                 else
@@ -177,6 +179,23 @@ namespace BLL.Services.Implementations
             else
                 return new ResponsePackage<ProfileDTO>(null, ResponseStatus.NotFound, "This user does not exist");
         }
+
+        private byte[] DownloadPicture(string pictureUrl)
+        {
+            using (var webClient = new WebClient())
+            {
+                try
+                {
+                    string path = Directory.GetCurrentDirectory() + pictureUrl;
+                    return webClient.DownloadData(path);
+                }
+                catch (Exception ex)
+                {
+                    return new byte[956];
+                }
+            }
+        }
+
         public ResponsePackage<List<ProfileDTO>> GetVerified()
         {
             List<User> notVerified = _uow.User.GetAll(u => !u.IsVerified).ToList();

@@ -5,11 +5,14 @@ import classes from './Header.module.css'
 import HeaderCartButton from './HeaderCartButton'
 import AuthContext from '../../Contexts/auth-context'
 import Button from '../UI/Button/Button'
+import { useNavigate } from 'react-router-dom'
 
 const Header = (props) => {
   const ctx = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const LogoutHandler = () => {
+    navigate('/');
     ctx.onLogout();
   };
 

@@ -22,5 +22,7 @@ namespace DAL.Model
         public bool IsVerified { get; set; } 
         public Guid PasswordGuid { get; set; } //guid koji cemo koristiti za reset passworda
         public string ProfileUrl { get; set; } //putanja do profilne slike
+
+        public List<Item> Items { get; set; }
     }
 }

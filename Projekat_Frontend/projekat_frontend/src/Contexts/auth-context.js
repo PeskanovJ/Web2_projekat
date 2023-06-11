@@ -12,6 +12,7 @@ export const AuthContextProvider = (props) => {
     const [user,setUser] = useState(JSON.parse(localStorage.getItem('user')));
     const [profilePic,setProfilePic] = useState()
     
+    
     useEffect(()=>{
         const storedUserLoggedInInformation = localStorage.getItem('isLoggedIn');
     

@@ -11,14 +11,23 @@ const Verification = () => {
   const [userList,SetUserList] =useState([]);
 
   useEffect(() => {
-      axios.get(process.env.REACT_APP_SERVER_URL+'users/notVerified')
-      .then(response => {
-        if(response.data != null){
-          SetUserList(response.data.map(element =>  new User(element)));
-        }
-  });
+     fetchData();
   }, []);
 
+  const fetchData=()=>{
+    axios.get(process.env.REACT_APP_SERVER_URL+'users/notVerified')
+    .then(response => {
+      if(response.data != "All users are verified"){
+        SetUserList(response.data.map(element =>  new User(element)));
+      }
+      else
+        SetUserList([])
+});
+  }
+
+  const ReloadHandler=()=>{
+    fetchData();
+  }
 
   return (
     <Fragment>
@@ -26,9 +35,20 @@ const Verification = () => {
         <h2>Requested user profiles</h2>
   
       <section className={classes.users}>
-        <Card>
-          <ul>{userList.map(user => <UserCard key={uuidv4()} id={user.UserName} FirstName = {user.FirstName} LastName = {user.LastName}  Email = {user.Email} Address = {user.Address} BirthDate= {user.BirthDate} ImageUrl = {user.ImageUrl}/>)}</ul>
-        </Card>
+       
+          {userList.length > 0 ? 
+          (
+          <Card>
+            <ul>
+              {userList.map(user => <UserCard key={uuidv4()} id={user.UserName} FirstName = {user.FirstName} LastName = {user.LastName}  Email = {user.Email} Address = {user.Address} BirthDate= {user.BirthDate} ImageUrl = {user.ImageUrl} onVerify={ReloadHandler} />)}
+            </ul>
+          </Card>
+          )
+          : 
+          (
+            <h2>All users are verified</h2>
+          )}
+          
       </section>
   
       </section>

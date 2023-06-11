@@ -1,12 +1,10 @@
 ﻿using BLL.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Shared;
 using Shared.Common;
 using Shared.Constants;
 using Shared.DTOs;
-using System.Text;
 
 namespace Projekat_Backend.Controllers
 {
@@ -28,30 +26,7 @@ namespace Projekat_Backend.Controllers
                 ResponsePackage<ProfileDTO> response = _userService.LoginUser(LoginDTO);
 
                 if (response.Status == ResponseStatus.OK)
-                {
-                    byte[] fileBytes;
-                    try
-                    {
-                        fileBytes = System.IO.File.ReadAllBytes(response.Data.ProfileUrl);
-                    }
-                    catch (Exception)
-                    {
-                        return StatusCode(500, "An error occurred while reading the profile picture.");
-                    }
-
-                    var content = new MultipartFormDataContent();
-                    var fileContent = new ByteArrayContent(fileBytes);
-                    content.Add(fileContent, "profilePicture", "profilePicture.jpg"); // Provide the desired filename and extension
-
-                    var json = JsonConvert.SerializeObject(response.Data);
-
-                    var jsonContent = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    content.Add(jsonContent, "user");
-
-                    // Return the multipart form data content
-                    return new OkObjectResult(content);
-                }
+                    return Ok(response.Data);
                 else
                 {
                     ModelState.AddModelError(String.Empty, response.Message);
@@ -92,7 +67,8 @@ namespace Projekat_Backend.Controllers
                 }
                 else
                 {
-                    filePath = Path.Combine("Avatars", "avatar.svg");
+                    filePath = Path.Combine(Directory.GetCurrentDirectory(), "Avatars");
+                    filePath = Path.Combine(filePath, "avatar.svg");
                 }
 
                 var task = await _userService.RegisterUser(UserDTO,SD.Roles.Buyer, filePath);
@@ -121,7 +97,7 @@ namespace Projekat_Backend.Controllers
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
 
-                    string uploadPath = "Avatars";
+                    string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Avatars");
                     Console.WriteLine(uploadPath);
 
                     if (!Directory.Exists(uploadPath))
@@ -138,7 +114,8 @@ namespace Projekat_Backend.Controllers
                 }
                 else
                 {
-                    filePath = Path.Combine("Avatars", "avatar.svg");
+                    filePath = Path.Combine(Directory.GetCurrentDirectory(), "Avatars");
+                    filePath = Path.Combine(filePath, "avatar.svg");
                 }
 
                 var task = await _userService.RegisterUser(UserDTO, SD.Roles.Seller, filePath);

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 
 import classes from "./UserCard.module.css";
 import axios from "axios";
@@ -10,14 +10,16 @@ const UserCard = (props) => {
     const year = birthDate.getFullYear();
     const formattedDate = `${day}/${month}/${year}`;
 
-
-    const VerifyHandler = async (props) =>{
+    const VerifyHandler = async (username) =>{
         try{
             const response = await axios.post(process.env.REACT_APP_SERVER_URL+'users/verify', { 
-              UserName: props,
+              UserName: username,
               IsAccepted: true,
               Reason: '',
             });
+
+            if(response.data)
+              props.onVerify();
           }
           catch (error){
             console.error(error);
@@ -35,7 +37,7 @@ const UserCard = (props) => {
            Address: {props.Address}<br/>
            Birth date: {formattedDate}<br/>
            Profile picture: 
-           {props.ImageUrl && <img src={props.ImageUrl} alt="avatar" />}
+           {props.Avatar && <img src={props.Avatar} alt="avatar" />}
         </div>
       </div>
       <div className="actions">

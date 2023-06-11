@@ -1,12 +1,12 @@
 import React,{useState ,useEffect ,useReducer, useContext,useRef }  from "react";
 import axios from 'axios'
-import multipart from 'parse-multipart';
 
 import classes from "./Form.module.css";
 import Modal from "../UI/Modal/Modal";
 import AuthContext from "../../Contexts/auth-context";
 import Input from '../UI/Input/Input'
 import Button from "../UI/Button/Button";
+import User from '../../Models/User'
 
 const emailReducer=(state,action)=>{
     if(action.type === 'USER_INPUT')
@@ -76,14 +76,13 @@ const LoginForm = (props) => {
             Email: event.target.email.value,
             Password: event.target.password.value,
           });
-          const data = response.data
-          const boundary = multipart.getBoundary(response.headers['content-type']);
-          const parts = multipart.Parse(Buffer.from(data, 'binary'), boundary);
-    
-          const user = JSON.parse(parts[0].data.toString());
-          const profilePic = parts[1].data;
+          const user = new User(response.data)
+          
+          const byteArray = new Uint8Array(response.data.Avatar);
+          const blob = new Blob([new Uint8Array(byteArray)], { type: 'image/svg' });
+          user.Avatar = URL.createObjectURL(blob);
 
-          authCtx.onLogin(user,profilePic);
+          authCtx.onLogin(user);
           props.onClose();
         }
         catch (error){

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace DAL.Repository.IRepository
 {
-    public interface IUnitOfWork
+    public interface IItemRepository : IRepository<Item>
     {
-        IUserRepository User { get; }
-        IItemRepository Item { get; }
-
+        void Update(Item obj);
+        void Delete(Item obj);
         void Save();
     }
 }

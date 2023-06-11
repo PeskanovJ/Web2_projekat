@@ -16,9 +16,10 @@ namespace DAL.Repository
             _db = db;
 
             User = new UserRepository(_db);
-
+            Item = new ItemRepository(_db);
         }
         public IUserRepository User { get; set; }
+        public IItemRepository Item { get; set; }
 
         public void Save()
         {

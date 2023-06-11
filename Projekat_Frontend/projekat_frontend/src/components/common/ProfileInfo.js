@@ -13,19 +13,19 @@ function ProfileInfo() {
   const year = birthDate.getFullYear();
   const formattedDate = `${day}/${month}/${year}`;
   let role='';
-
+let image ='';
   if(ctx.user.Role==1)
    role="Buyer";
   else if(ctx.user.Role==2)
     role="Seller";
   else
     role = "Admin";
-    
+
   return (
     <Fragment>
       <section className={classes.summary}>
       <h2>Your Profile</h2>
-      {ctx.user.ProfileUrl && <img src={ctx.user.ProfileUrl} alt="avatar" />}
+      <img src={ctx.user.Avatar} alt='avatar'/>
       <p>Username: <b>  {ctx.user.UserName}</b></p><br/>
       <p>First name: <b>  {ctx.user.FirstName}</b></p><br/>
       <p>Last name: <b>  {ctx.user.LastName}</b></p><br/>
@@ -33,7 +33,7 @@ function ProfileInfo() {
       <p>Address: <b>  {ctx.user.Address}</b></p><br/>
       <p>Birth date: <b>  {formattedDate}</b></p><br/>
       <p>Account type: <b>  {role}</b></p><br/>
-
+      {ctx.user.IsVerified?(<p>Verified</p>):(<p>Pending</p>)}
     </section>
     </Fragment>
   );

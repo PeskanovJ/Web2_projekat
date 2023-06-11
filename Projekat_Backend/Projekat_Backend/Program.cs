@@ -19,6 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IItemService, ItemService>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers();
