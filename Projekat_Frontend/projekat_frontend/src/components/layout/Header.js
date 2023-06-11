@@ -44,8 +44,8 @@ const Header = (props) => {
                         <Button>New orders</Button>
                       </Link>
 
-                      <Link to="/myItems">
-                        <Button>My items</Button>
+                      <Link to="/orderHistory">
+                        <Button>Order history</Button>
                       </Link>
                     </>
                     ):null}

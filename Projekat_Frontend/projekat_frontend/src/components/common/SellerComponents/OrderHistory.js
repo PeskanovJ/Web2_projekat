@@ -6,7 +6,7 @@ import Card from '../../UI/Card/Card'
 import Item from '../../../Models/Item'
 import ItemCard from './ItemCard'
 
-const MyItems = () => {
+const OrderHistory = () => {
   const [itemList,SetItemList] =useState([]);
 
   useEffect(() => {
@@ -55,4 +55,4 @@ const MyItems = () => {
   )
 }
 
-export default MyItems
+export default OrderHistory

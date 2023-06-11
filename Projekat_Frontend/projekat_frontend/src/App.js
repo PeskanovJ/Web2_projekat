@@ -14,7 +14,7 @@ import MyOrders from "./components/common/BuyerComponents/MyOrders";
 // Seller
 import NewItem from './components/common/SellerComponents/NewItem'
 import NewOrders from './components/common/SellerComponents/NewOrders'
-import MyItems from './components/common/SellerComponents/MyItems'
+import OrderHistory from './components/common/SellerComponents/OrderHistory'
 //Admin
 import AllOrders from './components/common/AdminComponents/AllOrders'
 import Verification from './components/common/AdminComponents/Verification'
@@ -61,7 +61,7 @@ function App() {
             <Route path="/" exact element={<Dashboard/>} />
             <Route path="/profile" element={<ProfileInfo />} />
             <Route path="/myOrders" element={<MyOrders />} />
-            <Route path="/myItems" element={<MyItems />} />
+            <Route path="/orderHistory" element={<OrderHistory />} />
             <Route path="/addNew" element={<NewItem />} />
             <Route path="/myOrders" element={<MyOrders />} />
             <Route path="/newOrders" element={<NewOrders />} />
