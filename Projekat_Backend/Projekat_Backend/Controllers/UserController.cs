@@ -1,4 +1,5 @@
 ﻿using BLL.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
@@ -156,6 +157,7 @@ namespace Projekat_Backend.Controllers
         }
 
         [HttpGet("notVerified")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetUnverified()
         {
             var result = _userService.GetVerified();
@@ -169,6 +171,7 @@ namespace Projekat_Backend.Controllers
         }
 
         [HttpPost("verify")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Verify([FromBody]VerificationDTO user)
         {
             var result = await _userService.VerifyUser(user);
@@ -179,6 +182,7 @@ namespace Projekat_Backend.Controllers
         }
 
         [HttpPost("deny")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Deny([FromBody] VerificationDTO user)
         {
             var result = await _userService.DenyUser(user);

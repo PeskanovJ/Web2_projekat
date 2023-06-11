@@ -24,17 +24,17 @@ let image ='';
   return (
     <Fragment>
       <section className={classes.summary}>
-      <h2>Your Profile</h2>
-      <img src={ctx.user.Avatar} alt='avatar'/>
-      <p>Username: <b>  {ctx.user.UserName}</b></p><br/>
-      <p>First name: <b>  {ctx.user.FirstName}</b></p><br/>
-      <p>Last name: <b>  {ctx.user.LastName}</b></p><br/>
-      <p>Email: <b>  {ctx.user.Email}</b></p><br/>
-      <p>Address: <b>  {ctx.user.Address}</b></p><br/>
-      <p>Birth date: <b>  {formattedDate}</b></p><br/>
-      <p>Account type: <b>  {role}</b></p><br/>
-      {ctx.user.IsVerified?(<p>Verified</p>):(<p>Pending</p>)}
-    </section>
+        <h2>Your Profile</h2>
+        <img src={ctx.user.Avatar} alt='avatar'/>
+        <p>Username : <b>  {ctx.user.UserName}</b></p><br/>
+        <p>First name : <b>  {ctx.user.FirstName}</b></p><br/>
+        <p>Last name : <b>  {ctx.user.LastName}</b></p><br/>
+        <p>Email : <b>  {ctx.user.Email}</b></p><br/>
+        <p>Address : <b>  {ctx.user.Address}</b></p><br/>
+        <p>Birth date : <b>  {formattedDate}</b></p><br/>
+        <p>Account type : <b>  {role}</b></p><br/>
+        {ctx.user.IsVerified?(<p>Account Status : Verified</p>):(<p>Account Status : Pending</p>)}
+      </section>
     </Fragment>
   );
 }

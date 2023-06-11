@@ -1,11 +1,12 @@
 class Item {
-    constructor({Name, Description,Price,Amount,UserId,Image}) {
-      this.Name= Name;
-      this.Description= Description;
-      this.Price=Price;
-      this.Amount= Amount;
-      this.UserId = UserId;
-      this.Image = Image;
+    constructor({id,name, description,price,amount,userId,pictureUrl}) {
+      this.Id=id;
+      this.Name= name;
+      this.Description= description;
+      this.Price=price;
+      this.Amount= amount;
+      this.UserId = userId;
+      this.PictureUrl = pictureUrl;
      
     }
     

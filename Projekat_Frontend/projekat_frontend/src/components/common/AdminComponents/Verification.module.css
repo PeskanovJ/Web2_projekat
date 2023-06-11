@@ -21,7 +21,7 @@
     max-width: 60rem;
     width: 90%;
     margin: 2rem auto;
-    animation: meals-appear 1s ease-out forwards;
+    animation: users-appear 1s ease-out forwards;
   }
   
   .users ul {

@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 
 import classes from "./UserCard.module.css";
 import axios from "axios";
+import AuthContext from '../../../Contexts/auth-context'
 
 const UserCard = (props) => {
     const birthDate = new Date(props.BirthDate);
@@ -9,6 +10,7 @@ const UserCard = (props) => {
     const month = String(birthDate.getMonth() + 1).padStart(2, '0');
     const year = birthDate.getFullYear();
     const formattedDate = `${day}/${month}/${year}`;
+    const ctx = useContext(AuthContext);
 
     const VerifyHandler = async (username) =>{
         try{
@@ -16,6 +18,10 @@ const UserCard = (props) => {
               UserName: username,
               IsAccepted: true,
               Reason: '',
+            },{
+              headers: {
+                Authorization: `Bearer ${ctx.user.Token}`
+              }
             });
 
             if(response.data)
@@ -25,6 +31,10 @@ const UserCard = (props) => {
             console.error(error);
           }
     }
+
+    const DenyHandler = async (username) =>{
+     
+  }
 
   return (
     <li className={classes.user}>
@@ -42,7 +52,7 @@ const UserCard = (props) => {
       </div>
       <div className="actions">
         <button onClick={() => VerifyHandler(props.id)} >Verify</button>
-        <button>Deny</button>
+        <button>onClick={() => DenyHandler(props.id)}</button>
       </div>
     </li>
   )

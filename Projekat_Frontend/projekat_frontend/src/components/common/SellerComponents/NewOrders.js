@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import classes from './NewOrders.module.css'
 import Card from '../../UI/Card/Card'
 import Item from '../../../Models/Item'
-import OrderCard from './OrderCard'
+import ItemCard from './ItemCard'
 
 const NewOrders = () => {
   const [orderList,SetOrderList] =useState([]);
@@ -38,7 +38,7 @@ const NewOrders = () => {
         (
         <Card>
           <ul>
-            {orderList.map(order => <OrderCard key={uuidv4()} id={order.Id} Name = {order.Name} From = {order.From}   />)}
+            {orderList.map(order => <ItemCard key={uuidv4()} id={order.Id} Name = {order.Name} From = {order.From}   />)}
           </ul>
         </Card>
         )

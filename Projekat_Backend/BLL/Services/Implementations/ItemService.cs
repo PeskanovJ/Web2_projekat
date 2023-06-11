@@ -22,9 +22,10 @@ namespace BLL.Services.Implementations
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public ResponsePackage<bool> AddItem(ItemDTO itemDTO)
+        public ResponsePackage<bool> AddItem(NewItemDTO itemDTO,string filePath)
         {
             Item item = _mapper.Map<Item>(itemDTO);
+            item.PictureUrl = filePath;
             try { 
             _unitOfWork.Item.Add(item);
             _unitOfWork.Save();

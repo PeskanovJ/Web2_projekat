@@ -24,11 +24,11 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Model.Item", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<int>("Amount")
                         .HasColumnType("int");
@@ -48,15 +48,12 @@ namespace DAL.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<long>("UserId1")
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Items");
                 });
@@ -131,7 +128,7 @@ namespace DAL.Migrations
                 {
                     b.HasOne("DAL.Model.User", "User")
                         .WithMany("Items")
-                        .HasForeignKey("UserId1")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

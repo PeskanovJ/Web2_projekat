@@ -25,7 +25,7 @@ export const AuthContextProvider = (props) => {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('user');
         setIsLoggedIn(false);
-        setUser(new User('','','','','','','','','','',false,''));
+        setUser(new User(0,'','','','','','','','','','',false,''));
     }
 
     const loginHandler=(user,profilePic)=>{

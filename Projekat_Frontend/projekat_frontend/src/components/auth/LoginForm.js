@@ -86,7 +86,7 @@ const LoginForm = (props) => {
           props.onClose();
         }
         catch (error){
-          console.error(error);
+          alert(error);
         }
       }
       else if(!emailIsValid)
