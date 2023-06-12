@@ -10,7 +10,7 @@ namespace DAL.Repository.IRepository
     {
         IUserRepository User { get; }
         IItemRepository Item { get; }
-
+        IOrderRepository Orders { get; }
         void Save();
     }
 }

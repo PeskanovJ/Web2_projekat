@@ -19,17 +19,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IOrderService, OrderService>();
 builder.Services.AddTransient<IItemService, ItemService>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("SamoOdabrani", policy => policy.RequireClaim("Neki_moj_claim")); //Ovde mozemo kreirati pravilo za validaciju nekog naseg claima
-});
 
 //Dodajemo semu autentifikacije i podesavamo da se radi o JWT beareru
 builder.Services.AddAuthentication(opt => {
@@ -65,6 +61,7 @@ builder.Services.AddCors(options =>
         {
             policy.AllowAnyOrigin()
                 .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true)
                 .AllowAnyMethod();
         });
 });

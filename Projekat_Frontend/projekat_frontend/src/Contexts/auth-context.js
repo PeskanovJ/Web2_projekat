@@ -9,7 +9,7 @@ const AuthContext = React.createContext({
 
 export const AuthContextProvider = (props) => {
     const [isLoggedIn,setIsLoggedIn] = useState(false);
-    const [user,setUser] = useState(JSON.parse(localStorage.getItem('user')));
+    const [user,setUser] = useState(JSON.parse(localStorage.getItem('user'))===null && new User(0,'','','','','','','','','',0,false,''));
     const [profilePic,setProfilePic] = useState()
     
     
@@ -25,7 +25,7 @@ export const AuthContextProvider = (props) => {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('user');
         setIsLoggedIn(false);
-        setUser(new User(0,'','','','','','','','','','',false,''));
+        setUser(new User(0,'','','','','','','','','',0,false,''));
     }
 
     const loginHandler=(user,profilePic)=>{

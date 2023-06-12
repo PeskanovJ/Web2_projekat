@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Shared.DTOs
 {
-    public class OrderDTO
+    public class NewOrderItemDTO
     {
         public long Id { get; set; }
-        public string Username { get; set; }
-        public List<OrderItemDTO> OrderItems { get; set; }
+        public int Amount { get; set; }
     }
 }

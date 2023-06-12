@@ -20,6 +20,7 @@ namespace DAL.Context.Configurations
             builder.Property(x => x.UserId).IsRequired();
 
             builder.HasOne(x => x.User).WithMany(x => x.Orders).HasForeignKey(x => x.UserId);
+            
         }
     }
 }

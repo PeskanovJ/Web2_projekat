@@ -84,6 +84,9 @@ namespace DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
+
                     b.Property<bool>("IsSent")
                         .HasColumnType("bit");
 
@@ -98,11 +101,9 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemId");
-
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItem");
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("DAL.Model.User", b =>
@@ -195,19 +196,13 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Model.OrderItem", b =>
                 {
-                    b.HasOne("DAL.Model.Item", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DAL.Model.Order", null)
+                    b.HasOne("DAL.Model.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Item");
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("DAL.Model.Order", b =>

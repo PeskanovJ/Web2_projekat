@@ -1,6 +1,7 @@
 ﻿using DAL.Context;
 using DAL.Model;
 using DAL.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,21 +19,38 @@ namespace DAL.Repository
             _db = db;
         }
 
+        public IEnumerable<Order> GetHistory(long Id)
+        {
+            List<Order> allOrders = _db.Orders.Include("OrderItems").ToList();
+            List<Order> retList = new List<Order>();
+            foreach(Order order in allOrders)
+                foreach(OrderItem i in order.OrderItems)
+                    if (i.SellerId == Id && i.IsSent)
+                    {
+                        retList.Add(order);
+                        break;
+                    }
+            return retList;
+        }
+
+        public IEnumerable<Order> GetNew(long Id)
+        {
+            List<Order> allOrders = _db.Orders.Include("OrderItems").ToList();
+            List<Order> retList = new List<Order>();
+            foreach (Order order in allOrders)
+                foreach (OrderItem i in order.OrderItems)
+                    if (i.SellerId == Id && !i.IsSent)
+                    {
+                        retList.Add(order);
+                        break;
+                    }
+            return retList;
+        }
+
         public void Save()
         {
             _db.SaveChanges();
         }
-
-        public void Update(Order obj,OrderItem itm)
-        {
-            var objFromDb = _db.Orders.FirstOrDefault(u => u.Id == obj.Id);
-            if (objFromDb != null)
-            {
-                if(objFromDb.OrderItems.Contains(itm))
-                {
-                    objFromDb.OrderItems.Append(itm);
-                }
-            }
-        }
+        
     }
 }

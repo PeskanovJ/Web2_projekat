@@ -1,6 +1,7 @@
-import React, { useReducer } from "react";
+import React, { useReducer,useContext } from "react";
 
 import CartContext from "./cart-context";
+import ItemContext from './item-context'
 
 const defaultCartState = {
   items: [],
@@ -9,8 +10,14 @@ const defaultCartState = {
 
 const cartReducer = (state, action) => {
   if (action.type === "ADD") {
+    if(action.item.amount > action.item.remainingAmount){
+      return {
+        items: state.items,
+        totalAmount: state.totalAmount ,
+      };
+    }
     const updatedTotalAmount = state.totalAmount + action.item.price * action.item.amount;
-
+    
     const existingIndex = state.items.findIndex(
       (item) => item.id === action.item.id
     );
@@ -19,13 +26,24 @@ const cartReducer = (state, action) => {
     let updatedItems;
     
     if(existingCartItem){
+      if(existingCartItem.amount + action.item.amount <= action.item.remainingAmount){
+
       const updatedItem =
       {
         ...existingCartItem, 
         amount: existingCartItem.amount+action.item.amount
       };
+      
       updatedItems = [...state.items];
       updatedItems[existingIndex] = updatedItem;
+      }
+      else
+      {
+        return {
+          items: state.items,
+          totalAmount: state.totalAmount ,
+        };
+      }
     }
     else
     {
@@ -60,34 +78,51 @@ const cartReducer = (state, action) => {
       totalAmount: updatedTotalAmount
     }
   }
+
+  if(action.type === "REMOVE"){
+    return {
+      items: [],
+      totalAmount: 0
+    }
+  }
   return defaultCartState;
 };
 
 const CartProvider = (props) => {
+  const ctx = useContext(ItemContext)
   const [cartState, dispatchCartAction] = useReducer(
     cartReducer,
     defaultCartState
   );
 
   const addItemToCartHandler = (item) => {
-    dispatchCartAction({ type: "ADD", item: item });
+    const i =ctx.items.filter(i => i.Id === item.id)
+  
+    dispatchCartAction({ type: "ADD", item: {...item, remainingAmount:i[0].Amount}});
   };
 
   const removeItemToCarthandler = (id) => {
     dispatchCartAction({ type: "REMOVE", id: id });
   };
 
+  const emptyCartHandler=()=>{
+    dispatchCartAction({type: "REMOVEALL"})
+  }
+
   const cartContext = {
     items: cartState.items,
     totalAmount: cartState.totalAmount,
     addItem: addItemToCartHandler,
     removeItem: removeItemToCarthandler,
+    emptyCart: emptyCartHandler
   };
 
   return (
+   
     <CartContext.Provider value={cartContext}>
       {props.children}
     </CartContext.Provider>
+    
   );
 };
 

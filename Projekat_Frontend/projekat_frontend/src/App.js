@@ -7,6 +7,8 @@ import LoginForm from "./components/auth/LoginForm";
 import RegisterForm from './components/auth/RegisterForm'
 import CartProvider from "./Contexts/CartProvider";
 import { AuthContextProvider } from "./Contexts/auth-context";
+import { ItemContextProvider } from "./Contexts/item-context";
+import { OrderContextProvider } from "./Contexts/order-context";
 import ProfileInfo from "./components/common/ProfileInfo";
 import Dashboard from "./components/Home/Dashboard";
 //Buyer
@@ -49,8 +51,10 @@ function App() {
   };
 
   return (
-    <CartProvider >
-      <AuthContextProvider>
+    <AuthContextProvider>
+      <ItemContextProvider>
+        <OrderContextProvider>
+        <CartProvider>
       <Router>
         {cartIsShown && <Cart onClose={hideCartHandler}/>}
         {LoginIsShown && <LoginForm onClose={hideLoginFormHandler}/>}
@@ -70,8 +74,10 @@ function App() {
         </Routes>
         </main>
         </Router>
+          </CartProvider>
+          </OrderContextProvider>
+        </ItemContextProvider>
     </AuthContextProvider>
-   </CartProvider>
   );
 }
 

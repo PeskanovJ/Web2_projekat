@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,8 +10,8 @@ namespace DAL.Repository.IRepository
 {
     public interface IOrderRepository : IRepository<Order>
     {
-        void Update(Order obj,OrderItem itm);
-        
+        IEnumerable<Order> GetHistory(long id);
+        IEnumerable<Order> GetNew(long Id);
         void Save();
     }
 }

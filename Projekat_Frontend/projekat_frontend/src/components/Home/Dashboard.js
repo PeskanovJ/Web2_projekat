@@ -1,44 +1,27 @@
-import React, { Fragment, useEffect,useState } from 'react'
-import axios from 'axios'
+import React, { Fragment, useEffect,useState,useContext } from 'react'
 
 import classes from './Dashboard.module.css'
 
 import DashboardItem from './DashBoardItem'
-import Item from '../../Models/Item'
 import Card from '../UI/Card/Card'
+import ItemContext from '../../Contexts/item-context'
 
 const Dashboard = () => {
-  const [itemList,SetItemList] =useState([]);
-
-  const fetchItems=()=>
-  {
-    axios.get(process.env.REACT_APP_SERVER_URL+'items/allItems')
-    .then(response => 
-    {
-      if(response.data != "All users are verified"){
-        console.log(response.data)
-        SetItemList(response.data.map(element =>  new Item(element)));
-      }
-      else
-      SetItemList([])
-
-      console.log(itemList)
-     });
-  }
+  const ctx = useContext(ItemContext)
 
   useEffect(() => {
-    fetchItems();
+    ctx.onFetch()
   }, []);
 
   return (
     <Fragment>
          <section className={classes.summary}>
             <h2>All items</h2>
-            {itemList.length > 0 ? 
+            {ctx.items.length > 0 ? 
             (
               <Card>
                 <section className={classes.items}>
-                <ul>{itemList.map((item) => <DashboardItem key={item.Id} id={item.Id} name={item.Name} description={item.Description} price={item.Price} amount={item.Amount}/>)}</ul>
+                <ul>{ctx.items.map((item) => <DashboardItem key={item.Id} id={item.Id} name={item.Name} description={item.Description} price={item.Price} amount={item.Amount}/>)}</ul>
                 </section>
               </Card>
             ): 

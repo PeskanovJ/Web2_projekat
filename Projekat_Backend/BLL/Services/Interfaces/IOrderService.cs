@@ -11,9 +11,11 @@ namespace BLL.Services.Interfaces
     public interface IOrderService
     {
         ResponsePackage<OrderDTO> GetOrder(long id);
-        ResponsePackage<bool> AddOrder(OrderDTO itemDTO);
+        ResponsePackage<bool> AddOrder(NewOrderDTO orderDTO);
         ResponsePackage<bool> UpdateOrder(long id);
         ResponsePackage<IEnumerable<OrderDTO>> GetAll();
         ResponsePackage<IEnumerable<OrderDTO>> GetByUser(long UserId);
+        ResponsePackage<IEnumerable<OrderDTO>> GetHistory(long UserId);
+        ResponsePackage<IEnumerable<OrderDTO>> GetNew(long UserId);
     }
 }

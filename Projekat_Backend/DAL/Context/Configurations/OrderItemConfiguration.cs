@@ -13,6 +13,7 @@ namespace DAL.Context.Configurations
         public void Configure(EntityTypeBuilder<OrderItem> builder)
         {
             builder.HasKey(x=>x.Id);
+            builder.HasOne(x => x.Order).WithMany(x => x.OrderItems).HasForeignKey(x => x.Id);
         }
     }
 }
