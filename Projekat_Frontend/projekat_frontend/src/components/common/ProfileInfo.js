@@ -2,7 +2,6 @@ import React, { Fragment, useContext } from 'react';
 
 import classes from './ProfileInfo.module.css'
 import AuthContext from '../../Contexts/auth-context';
-import Input from '../UI/Input/Input'
 
 function ProfileInfo() {
   const ctx = useContext(AuthContext)
@@ -13,7 +12,9 @@ function ProfileInfo() {
   const year = birthDate.getFullYear();
   const formattedDate = `${day}/${month}/${year}`;
   let role='';
-let image ='';
+
+  const imageURL = `data:image/svg+xml;base64,${ctx.user.Avatar}`;
+  
   if(ctx.user.Role==1)
    role="Buyer";
   else if(ctx.user.Role==2)
@@ -25,7 +26,7 @@ let image ='';
     <Fragment>
       <section className={classes.summary}>
         <h2>Your Profile</h2>
-        <img src={ctx.user.Avatar} alt='avatar'/>
+        <img className={classes.profilePic} src={imageURL} alt="Profile picture"/>
         <p>Username : <b>  {ctx.user.UserName}</b></p><br/>
         <p>First name : <b>  {ctx.user.FirstName}</b></p><br/>
         <p>Last name : <b>  {ctx.user.LastName}</b></p><br/>

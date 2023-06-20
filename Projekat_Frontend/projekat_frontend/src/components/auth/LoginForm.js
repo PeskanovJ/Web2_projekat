@@ -36,9 +36,9 @@ const LoginForm = (props) => {
     const passwordInputRef=useRef();
   
     const {isValid: emailIsValid} =emailState 
-    const {isValid: passwordIsValid} =passwordState 
-  
-     useEffect(()=>{
+    const {isValid: passwordIsValid} =passwordState
+
+    useEffect(()=>{
       const identifier = setTimeout(()=>{
         setFormIsValid(
           emailIsValid && passwordIsValid
@@ -49,6 +49,12 @@ const LoginForm = (props) => {
         clearTimeout(identifier);
       };
     }, [emailIsValid,passwordIsValid]);
+
+    useEffect(()=>{
+      const button = document.getElementById('login');
+      button.disabled = false;
+      button.textContent= 'Login';
+    }, []);
   
   
     const emailChangeHandler = (event) => {
@@ -70,6 +76,9 @@ const LoginForm = (props) => {
   
     const submitHandler = async(event) => {
       event.preventDefault();
+      const button = document.getElementById('login');
+      button.textContent= 'Logging in';
+      button.disabled = true;
       if(formIsValid){
         try{
           const response = await axios.post(process.env.REACT_APP_SERVER_URL+'users/login', { 
@@ -77,16 +86,14 @@ const LoginForm = (props) => {
             Password: event.target.password.value,
           });
           const user = new User(response.data)
-          
-          const byteArray = new Uint8Array(response.data.Avatar);
-          const blob = new Blob([new Uint8Array(byteArray)], { type: 'image/svg' });
-          user.Avatar = URL.createObjectURL(blob);
-
           authCtx.onLogin(user);
           props.onClose();
+          
         }
         catch (error){
-          alert(error);
+          alert(error.response.data.detail);
+          button.textContent= 'Login';
+          button.disabled = false;
         }
       }
       else if(!emailIsValid)
@@ -105,7 +112,7 @@ const LoginForm = (props) => {
         <Input ref={emailInputRef} id='email' label='E-mail' type="email" isValid={emailIsValid} value={emailState.value}  onChange={emailChangeHandler} onBlur={validateEmailHandler}/>
         <Input ref={passwordInputRef} id='password' label='Password' type="password" isValid={passwordIsValid} value={passwordState.value}  onChange={passwordChangeHandler} onBlur={validatePasswordHandler}/>
         <div className={classes.actions}>
-          <Button type="submit" className={classes.btn} >
+          <Button type="submit" id='login' className={classes.btn} >
             Login
           </Button>
         </div>

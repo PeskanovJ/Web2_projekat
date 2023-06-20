@@ -60,7 +60,7 @@ function App() {
         {LoginIsShown && <LoginForm onClose={hideLoginFormHandler}/>}
         {RegisterIsShown && <RegisterForm onClose={hideRegisterFormHandler}/>}
         <Header onShowCart={showCartHandler}  onShowLoginForm={showLoginFormHandler} onShowRegisterForm={showRegisterFormHandler}/>
-        <main style={{ marginTop: '6rem' }}>
+        <main>
           <Routes>
             <Route path="/" exact element={<Dashboard/>} />
             <Route path="/profile" element={<ProfileInfo />} />

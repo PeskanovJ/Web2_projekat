@@ -4,7 +4,7 @@ import User from '../Models/User'
 const AuthContext = React.createContext({
     isLoggedIn:false,
     onLogout: ()=>{},
-    onLogin:(user)=>{},
+     onLogin:(user)=>{},
 });
 
 export const AuthContextProvider = (props) => {

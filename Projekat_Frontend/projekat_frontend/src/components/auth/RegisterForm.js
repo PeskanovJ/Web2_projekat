@@ -36,6 +36,12 @@ const RegisterForm = (props) => {
       };
     }, [emailIsValid,passwordIsValid,passwordRepeatIsValid]);
   
+
+    useEffect(()=>{
+      const button = document.getElementById('register');
+      button.disabled = false;
+      button.textContent= 'Register';
+    }, []);
   
     const emailChangeHandler = (event) => {
         setEnteredEmail(event.target.value);
@@ -74,6 +80,9 @@ const RegisterForm = (props) => {
       event.preventDefault();
       const formData = new FormData();
       if(formIsValid){
+        const button = document.getElementById('register');
+        button.textContent= 'Regisration in process';
+        button.disabled = true;
         formData.append('UserName', event.target.username.value);
         formData.append('Email', enteredEmail);
         formData.append('FirstName', event.target.firstname.value);
@@ -106,7 +115,9 @@ const RegisterForm = (props) => {
             props.onClose()
           }
         } catch (error) {
-          console.error(error);
+          alert(error.response.data.detail);
+          button.textContent= 'Register';
+          button.disabled = false;
         }
       }
       else if(!emailIsValid)
@@ -137,7 +148,7 @@ const RegisterForm = (props) => {
         <input type="radio" value="Seller" name="accType" /> Prodavac
         <Input type='file' label="Profile picture" id='avatar'/>
         <div className={classes.actions}>
-          <Button type="submit" className={classes.btn} >
+          <Button type="submit" id='register' className={classes.btn} >
             Register
           </Button>
         </div>

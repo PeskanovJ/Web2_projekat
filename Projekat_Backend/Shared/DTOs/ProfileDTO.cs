@@ -18,6 +18,6 @@ namespace Shared.DTOs
         public string Token { get; set; }
         public SD.Roles Role { get; set; }
         public bool IsVerified { get; set; }
-        public byte[] Avatar { get; set; }
+        public string Avatar { get; set; }
     }
 }

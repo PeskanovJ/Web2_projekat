@@ -16,3 +16,9 @@
     font-size: 2rem;
     margin-top: 0;
   }
+
+  .profilePic{
+    border-radius: 50%;
+    width: 10rem;
+    height: 10rem;
+  }

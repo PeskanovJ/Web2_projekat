@@ -30,14 +30,12 @@ namespace Projekat_Backend.Controllers
                     return Ok(response.Data);
                 else
                 {
-                    ModelState.AddModelError(String.Empty, response.Message);
-                    return Problem("Login");
+                    return Problem(response.Message,statusCode:((int)response.Status));
                 }
             }
             else
             {
-                ModelState.AddModelError(String.Empty, "Invalid login atempt.");
-                return Problem("Login");
+                return Problem("Entered values not valid", statusCode: (int)ResponseStatus.BadRequest);
             }
         }
 
@@ -75,16 +73,18 @@ namespace Projekat_Backend.Controllers
                 var task = await _userService.RegisterUser(UserDTO,SD.Roles.Buyer, filePath);
                 if (task.Status == ResponseStatus.OK)
                     return Ok(task.Message);
-                else if (task.Status == ResponseStatus.InvalidEmail)
-                    ModelState.AddModelError("email", task.Message);
-                else if (task.Status == ResponseStatus.InvalidUsername)
-                    ModelState.AddModelError("username", task.Message);
-                else if (task.Status == ResponseStatus.InternalServerError)
-                    ModelState.AddModelError(String.Empty, task.Message);
+                else if(task.Status == ResponseStatus.InternalServerError)
+                {
+                    if (System.IO.File.Exists(filePath) && file != null)
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    return Problem(task.Message, statusCode: ((int)task.Status));
+                }
                 else
-                    ModelState.AddModelError(String.Empty, task.Message);
+                    return Problem(task.Message, statusCode: ((int)task.Status));
             }
-            return Problem();
+            return Problem("Entered values not valid", statusCode: (int)ResponseStatus.BadRequest);
 
         }
 
@@ -122,14 +122,16 @@ namespace Projekat_Backend.Controllers
                 var task = await _userService.RegisterUser(UserDTO, SD.Roles.Seller, filePath);
                 if (task.Status == ResponseStatus.OK)
                     return Ok(task.Message);
-                else if (task.Status == ResponseStatus.InvalidEmail)
-                    ModelState.AddModelError("email", task.Message);
-                else if (task.Status == ResponseStatus.InvalidUsername)
-                    ModelState.AddModelError("username", task.Message);
                 else if (task.Status == ResponseStatus.InternalServerError)
-                    ModelState.AddModelError(String.Empty, task.Message);
+                {
+                    if (System.IO.File.Exists(filePath) && file != null)
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    return Problem(task.Message, statusCode: ((int)task.Status));
+                }
                 else
-                    ModelState.AddModelError(String.Empty, task.Message);
+                    return Problem(task.Message, statusCode: ((int)task.Status));
             }
             return Problem();
 

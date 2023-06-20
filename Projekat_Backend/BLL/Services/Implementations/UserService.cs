@@ -88,9 +88,6 @@ namespace BLL.Services.Implementations
             
             try
             {
-                _uow.User.Add(newUser);
-                _uow.Save();
-
                 var success = await _emailService.SendMailAsync(new EmailData()
                 {
                     To = newUser.Email,
@@ -100,7 +97,11 @@ namespace BLL.Services.Implementations
                 });
 
                 if (success)
+                {
                     return new ResponsePackage<bool>(true, ResponseStatus.OK, "User registered succesfully");
+                    _uow.User.Add(newUser);
+                    _uow.Save();
+                }
                 else
                     return new ResponsePackage<bool>(false, ResponseStatus.InternalServerError, "There was an error while registering new user");
             }
@@ -170,30 +171,17 @@ namespace BLL.Services.Implementations
                     ProfileDTO p = _mapper.Map<ProfileDTO>(u);
                     p.Token = tokenString;
                     p.Role = u.Role;
-                    p.Avatar = DownloadPicture(u.ProfileUrl);
+
+                    byte[] imageBytes = System.IO.File.ReadAllBytes(u.ProfileUrl);
+                    p.Avatar = Convert.ToBase64String(imageBytes);
+
                     return new ResponsePackage<ProfileDTO>(p, ResponseStatus.OK, "Login successful");
                 }
                 else
-                    return new ResponsePackage<ProfileDTO>(null, ResponseStatus.NotFound, "There was an error with login");
+                    return new ResponsePackage<ProfileDTO>(null, ResponseStatus.NotFound, "Wrong password");
             }
             else
                 return new ResponsePackage<ProfileDTO>(null, ResponseStatus.NotFound, "This user does not exist");
-        }
-
-        private byte[] DownloadPicture(string pictureUrl)
-        {
-            using (var webClient = new WebClient())
-            {
-                try
-                {
-                    string path = Directory.GetCurrentDirectory() + pictureUrl;
-                    return webClient.DownloadData(path);
-                }
-                catch (Exception ex)
-                {
-                    return new byte[956];
-                }
-            }
         }
 
         public ResponsePackage<List<ProfileDTO>> GetVerified()
