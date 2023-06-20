@@ -4,6 +4,21 @@ import classes from "./UserCard.module.css";
 import axios from "axios";
 import AuthContext from '../../../Contexts/auth-context'
 
+
+const getImageType = (image) => {
+  if (image.startsWith('/9j/')) {
+    return 'image/jpeg';
+  } else if (image.startsWith('iVBORw0KGgo')) {
+    return 'image/png';
+  } else if (image.startsWith('PHN2Zy')) {
+    return 'image/svg+xml';
+  } else if (image.startsWith('R0lGODlh')) {
+    return 'image/gif';
+  } else {
+    return '';
+  }
+};
+
 const UserCard = (props) => {
     const birthDate = new Date(props.BirthDate);
     const day = String(birthDate.getDate()).padStart(2, '0');
@@ -35,6 +50,11 @@ const UserCard = (props) => {
     const DenyHandler = async (username) =>{
      
   }
+  console.log(props)
+  var imageURL='';
+  if(props.Avatar != null)
+    imageURL = `data:${getImageType(props.Avatar)};base64,${props.Avatar}`;
+  
 
   return (
     <li className={classes.user}>
@@ -46,13 +66,13 @@ const UserCard = (props) => {
            Email: {props.Email}<br/>
            Address: {props.Address}<br/>
            Birth date: {formattedDate}<br/>
-           Profile picture: 
-           {props.Avatar && <img src={props.Avatar} alt="avatar" />}
+           Profile picture: <br/>
+           {props.Avatar && <img className={classes.profilePic} src={imageURL} alt="Profile picture"/>}
         </div>
       </div>
       <div className="actions">
         <button onClick={() => VerifyHandler(props.id)} >Verify</button>
-        <button>onClick={() => DenyHandler(props.id)}</button>
+        <button onClick={() => DenyHandler(props.id)}>Deny</button>
       </div>
     </li>
   )

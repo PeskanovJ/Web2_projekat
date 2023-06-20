@@ -3,6 +3,20 @@ import React, { Fragment, useContext } from 'react';
 import classes from './ProfileInfo.module.css'
 import AuthContext from '../../Contexts/auth-context';
 
+const getImageType = (image) => {
+  if (image.startsWith('/9j/')) {
+    return 'image/jpeg';
+  } else if (image.startsWith('iVBORw0KGgo')) {
+    return 'image/png';
+  } else if (image.startsWith('PHN2Zy')) {
+    return 'image/svg+xml';
+  } else if (image.startsWith('R0lGODlh')) {
+    return 'image/gif';
+  } else {
+    return '';
+  }
+};
+
 function ProfileInfo() {
   const ctx = useContext(AuthContext)
 
@@ -12,8 +26,9 @@ function ProfileInfo() {
   const year = birthDate.getFullYear();
   const formattedDate = `${day}/${month}/${year}`;
   let role='';
-
-  const imageURL = `data:image/svg+xml;base64,${ctx.user.Avatar}`;
+  var imageURL='';
+  if(ctx.user.Avatar != null)
+    imageURL = `data:${getImageType(ctx.user.Avatar)};base64,${ctx.user.Avatar}`;
   
   if(ctx.user.Role==1)
    role="Buyer";
@@ -34,7 +49,7 @@ function ProfileInfo() {
         <p>Address : <b>  {ctx.user.Address}</b></p><br/>
         <p>Birth date : <b>  {formattedDate}</b></p><br/>
         <p>Account type : <b>  {role}</b></p><br/>
-        {ctx.user.IsVerified?(<p>Account Status : Verified</p>):(<p>Account Status : Pending</p>)}
+        {ctx.user.IsVerified?(<p>Account Status :<b> Verified</b></p>):(<p>Account Status : <b>Pending</b></p>)}
       </section>
     </Fragment>
   );

@@ -194,7 +194,10 @@ namespace BLL.Services.Implementations
                 List<ProfileDTO> response = new List<ProfileDTO>();
                 foreach(var elem in notVerified)
                 {
-                    response.Add(_mapper.Map<ProfileDTO>(elem));
+                    ProfileDTO retUser = _mapper.Map<ProfileDTO>(elem);
+                    byte[] imageBytes = System.IO.File.ReadAllBytes(elem.ProfileUrl);
+                    retUser.Avatar= Convert.ToBase64String(imageBytes);
+                    response.Add(retUser);
                 }
                 return new ResponsePackage<List<ProfileDTO>>(response, ResponseStatus.OK);
             }

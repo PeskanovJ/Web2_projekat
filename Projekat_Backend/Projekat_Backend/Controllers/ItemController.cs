@@ -62,14 +62,16 @@ namespace Projekat_Backend.Controllers
                 var task =  _itemService.AddItem(itemDTO,filePath);
                 if (task.Status == ResponseStatus.OK)
                     return Ok(task.Message);
-                else if (task.Status == ResponseStatus.InvalidEmail)
-                    ModelState.AddModelError("email", task.Message);
-                else if (task.Status == ResponseStatus.InvalidUsername)
-                    ModelState.AddModelError("username", task.Message);
                 else if (task.Status == ResponseStatus.InternalServerError)
-                    ModelState.AddModelError(String.Empty, task.Message);
+                {
+                    if (System.IO.File.Exists(filePath) && file != null)
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    return Problem(task.Message, statusCode: ((int)task.Status));
+                }
                 else
-                    ModelState.AddModelError(String.Empty, task.Message);
+                    return Problem(task.Message, statusCode: ((int)task.Status));
             }
             return Problem();
         }

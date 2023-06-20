@@ -1,4 +1,4 @@
-import React, { Fragment, useContext } from 'react';
+import React, { Fragment, useContext,useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import classes from './Header.module.css';
@@ -15,6 +15,14 @@ const Header = (props) => {
     navigate('/');
     ctx.onLogout();
   };
+
+  const [dropdownVisible, setDropdownVisible] = useState(false); // State variable for dropdown visibility
+  // ...
+
+  const toggleDropdown = () => {
+    setDropdownVisible(!dropdownVisible);
+  };
+
 
   return (
     <Fragment>
@@ -33,34 +41,45 @@ const Header = (props) => {
                       <Button>My orders</Button>
                     </Link>
                   ) : null}
-                  {ctx.user.Role == 2 && ctx.user.IsVerified ? (
-                    <>
-                      <Link to="/addNew">
-                        <Button>New item</Button>
-                      </Link>
-
-                      <Link to="/newOrders">
-                        <Button>New orders</Button>
-                      </Link>
-
-                      <Link to="/orderHistory">
-                        <Button>Order history</Button>
-                      </Link>
-                    </>
+                  {ctx.user.Role == 2 && ctx.user.IsVerified ? 
+                  (
+                   <div className={classes.dropdown}>
+                    <Button onClick={toggleDropdown}>Actions</Button>
+                    {dropdownVisible && 
+                    (
+                      <div className={classes.dropdownContent}>
+                        <Link to="/addNew">
+                          <button className={classes.dropdownButton}>New item</button>
+                        </Link>
+                        <Link to="/newOrders">
+                        <button className={classes.dropdownButton}>New orders</button>
+                        </Link>
+                        <Link to="/orderHistory">
+                        <button className={classes.dropdownButton}>Order history</button>
+                        </Link>
+                      </div>
+                      )}
+                    </div>  
                   ) : null}
-                  {ctx.user.Role == 3 ? (
-                    <>
-                      <Link to="/allOrders">
-                        <Button>All orders</Button>
-                      </Link>
-
-                      <Link to="/verification">
-                        <Button>User verification</Button>
-                      </Link>
-                    </>
+                  {ctx.user.Role == 3 ? 
+                  (
+                   <div className={classes.dropdown}>
+                    <Button onClick={toggleDropdown}>Actions</Button>
+                    {dropdownVisible && 
+                    (
+                      <div className={classes.dropdownContent}>
+                        <Link to="/allOrders">
+                        <button className={classes.dropdownButton}>All orders</button>
+                        </Link>
+                        <Link to="/verification">
+                        <button className={classes.dropdownButton}>New Users</button>
+                        </Link>
+                      </div>
+                      )}
+                    </div>  
                   ) : null}
                 </>
-              ) : null}
+              ):null}
             </ul>
           </nav>
         </div>
@@ -70,11 +89,18 @@ const Header = (props) => {
               {ctx.user.Role == 1 ? (
                 <HeaderCartButton onClick={props.onShowCart} />
               ) : null}
-              <span> {ctx.user.FirstName} {ctx.user.LastName}</span>
-              <Link to="/profile">
-                <Button onClick={props.onShowProfile}>Profile</Button>
-              </Link>
-              <Button onClick={LogoutHandler}>Logout</Button>
+              <div className={classes.dropdown}>
+                <Button onClick={toggleDropdown}>{ctx.user.FirstName} {ctx.user.LastName}</Button>
+                  {dropdownVisible && 
+                  (
+                    <div className={classes.dropdownContent}>
+                      <Link to="/profile">
+                        <Button onClick={props.onShowProfile}>Profile</Button>
+                      </Link>
+                      <button className={classes.logout} onClick={LogoutHandler}>Logout</button>
+                    </div>
+                )}
+              </div> 
             </>
           ) : (
             <>

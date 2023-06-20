@@ -21,7 +21,7 @@ const Dashboard = () => {
             (
               <Card>
                 <section className={classes.items}>
-                <ul>{ctx.items.map((item) => <DashboardItem key={item.Id} id={item.Id} name={item.Name} description={item.Description} price={item.Price} amount={item.Amount}/>)}</ul>
+                <ul>{ctx.items.map((item) => <DashboardItem key={item.Id} id={item.Id} name={item.Name} description={item.Description} price={item.Price} amount={item.Amount} picture={item.PictureUrl}/>)}</ul>
                 </section>
               </Card>
             ): 

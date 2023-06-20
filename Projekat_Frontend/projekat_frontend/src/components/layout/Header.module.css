@@ -22,6 +22,60 @@
   padding-inline-start:0px
 }
 
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+
+
+.dropdownContent {
+  display: none;
+  position: absolute;
+  background-color: #8a2b06;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdownContent a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown:hover .dropdownContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownButton {
+  background-color: #5a1a01;
+  z-index: 1;
+}
+
+.logout{
+  font: inherit;
+  border: 1px solid #5a1a01;
+  background: #5a1a01;
+  color: white;
+  padding: 0.75rem 3.5rem;
+  cursor: pointer;
+  font-size: 1.15rem;
+  border-radius: 30px;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dropdownButton:hover,
+.dropdownButton:active{
+  background-color: whitesmoke;
+  color: #5a1a01;
+  border-color: whitesmoke;
+}
+
 @media (max-width: 768px) {
   .header {
     flex-direction: column;

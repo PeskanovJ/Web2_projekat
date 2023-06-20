@@ -36,3 +36,9 @@
     background-color: #641e03;
     border-color: #641e03;
   }
+
+  .profilePic{
+    width: auto;
+    height: 5rem;
+    border-radius: 50%;
+  }

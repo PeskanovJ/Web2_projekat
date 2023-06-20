@@ -46,7 +46,7 @@ const Verification = () => {
           (
           <Card>
             <ul>
-              {userList.map(user => <UserCard key={uuidv4()} id={user.UserName} FirstName = {user.FirstName} LastName = {user.LastName}  Email = {user.Email} Address = {user.Address} BirthDate= {user.BirthDate} ImageUrl = {user.ImageUrl} onVerify={ReloadHandler} />)}
+              {userList.map(user => <UserCard key={uuidv4()} id={user.UserName} FirstName = {user.FirstName} LastName = {user.LastName}  Email = {user.Email} Address = {user.Address} BirthDate= {user.BirthDate} Avatar = {user.Avatar} onVerify={ReloadHandler} />)}
             </ul>
           </Card>
           )

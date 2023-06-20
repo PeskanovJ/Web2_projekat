@@ -53,7 +53,14 @@ namespace BLL.Services.Implementations
             var list = _unitOfWork.Item.GetAll(includeProperties: includeProperties);
             var retList = new List<ItemDTO>();
             foreach (var item in list)
-               retList.Add(_mapper.Map<ItemDTO>(item));
+            {
+                ItemDTO retItem = _mapper.Map<ItemDTO>(item);
+                byte[] imageBytes = System.IO.File.ReadAllBytes(item.PictureUrl);
+                retItem.PictureUrl = Convert.ToBase64String(imageBytes);
+
+                retList.Add(retItem);
+
+            }
             
             return new ResponsePackage<IEnumerable<ItemDTO>>(retList, ResponseStatus.OK, "All items");
         }
