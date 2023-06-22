@@ -273,8 +273,6 @@ namespace BLL.Services.Implementations
             }
         }
 
-
-
         public ResponsePackage<bool> ResetPassword(PasswordResetDTO passwordResetDTO)
         {
             //User u = _uow.User.GetFirstOrDefault(u => u.PasswordGuid == passwordResetDTO.PasswordGuid);
@@ -303,19 +301,40 @@ namespace BLL.Services.Implementations
             return new ResponsePackage<ProfileDTO>(_mapper.Map<ProfileDTO>(u), ResponseStatus.OK, "Profile");
         }
 
-        public ResponsePackage<bool> UpdateProfile(ProfileDTO profileDTO)
+        public ResponsePackage<ProfileDTO> UpdateProfile(UserDTO userDTO,string file)
         {
-            //User u = _uow.User.GetFirstOrDefault(u => u.Email == profileDTO.Email);
-            //if (profileDTO.ProfileUrl != null)
-            //    u.ProfileUrl = profileDTO.ProfileUrl;
-            //u.FirstName = profileDTO.FirstName;
-            //u.LastName = profileDTO.LastName;
-            //u.PhoneNumber = profileDTO.PhoneNumber;
+            User u = _uow.User.GetFirstOrDefault(u => u.Email == userDTO.Email);
+            string avatar=String.Empty;
+            if (file != String.Empty)
+            {
+                avatar = u.ProfileUrl;
+                u.ProfileUrl = file;
+                
+            }
+            u.FirstName = userDTO.FirstName;
+            u.LastName = userDTO.LastName;
+            u.BirthDate = userDTO.BirthDate;
+            u.Address = userDTO.Address;
 
-            //_uow.User.Update(u);
-            //_uow.Save();
+            try
+            {
+                _uow.User.Update(u);
+                _uow.Save();
 
-            return new ResponsePackage<bool>(true, ResponseStatus.OK, "Profile changed");
+                ProfileDTO p = _mapper.Map<ProfileDTO>(u);
+                p.Role = u.Role;
+
+                byte[] imageBytes = System.IO.File.ReadAllBytes(u.ProfileUrl);
+                p.Avatar = Convert.ToBase64String(imageBytes);
+                if(avatar != String.Empty)
+                    if(avatar.Split('\\')[1]!="avatar.svg")
+                        System.IO.File.Delete(avatar);
+                return new ResponsePackage<ProfileDTO>(p, ResponseStatus.OK, "Profile changed");
+            }
+            catch (Exception ex)
+            {
+                return new ResponsePackage<ProfileDTO>(null, ResponseStatus.InternalServerError, "There was an error");
+            }
         }
 
        

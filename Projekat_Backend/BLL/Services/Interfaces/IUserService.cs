@@ -18,7 +18,7 @@ namespace BLL.Services.Interfaces
         Task<ResponsePackage<bool>> DenyUser(VerificationDTO verificationDTO);
         ResponsePackage<bool> ResetPassword(PasswordResetDTO passwordResetDTO);
         ResponsePackage<ProfileDTO> GetProfile(string email);
-        ResponsePackage<bool> UpdateProfile(ProfileDTO profileDTO);
+        ResponsePackage<ProfileDTO> UpdateProfile(UserDTO userDTO, string file);
         ResponsePackage<List<ProfileDTO>> GetVerified();
     }
 }

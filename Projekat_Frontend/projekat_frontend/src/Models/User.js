@@ -12,7 +12,8 @@ class User {
     this.IsVerified = isVerified;
     this.Avatar = avatar;
   }
-  
 }
+
+
 
 export default User;

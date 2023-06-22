@@ -4,43 +4,45 @@ import User from '../Models/User'
 const AuthContext = React.createContext({
     isLoggedIn:false,
     onLogout: ()=>{},
-     onLogin:(user)=>{},
+    onLogin:(user)=>{},
 });
 
 export const AuthContextProvider = (props) => {
     const [isLoggedIn,setIsLoggedIn] = useState(false);
-    const [user,setUser] = useState(JSON.parse(localStorage.getItem('user'))===null && new User(0,'','','','','','','','','',0,false,''));
-    const [profilePic,setProfilePic] = useState()
-    
+    const [user,setUser] = useState(JSON.parse(localStorage.getItem('user')));
     
     useEffect(()=>{
         const storedUserLoggedInInformation = localStorage.getItem('isLoggedIn');
     
-        if(storedUserLoggedInInformation === '1')
+        if(storedUserLoggedInInformation === '1'){
           setIsLoggedIn(true)
-    
+          setUser(JSON.parse(localStorage.getItem('user')));
+        }
+        else
+        {
+            setIsLoggedIn(false);
+            setUser(new User(0,'','','','','','','',0,false,''));
+        }
     }, []);
 
     const logoutHandler =()=>{
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('user');
         setIsLoggedIn(false);
-        setUser(new User(0,'','','','','','','','','',0,false,''));
+        setUser(new User(0,'','','','','','','',0,false,''));
     }
 
-    const loginHandler=(user,profilePic)=>{
+    const loginHandler=(user)=>{
         localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('isLoggedIn','1');
         setIsLoggedIn(true);
         setUser(user);
-        setProfilePic(profilePic);
     }
 
     return (
         <AuthContext.Provider
         value={{isLoggedIn: isLoggedIn,
             user:user,
-            profilePic:profilePic,
             onLogout: logoutHandler, 
             onLogin: loginHandler, 
             }}>

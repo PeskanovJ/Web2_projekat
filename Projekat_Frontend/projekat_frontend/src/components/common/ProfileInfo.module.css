@@ -21,3 +21,12 @@
     width: auto;
     height: 10rem;
   }
+
+  .input{
+    flex: 3;
+    font: inherit;
+    padding: 0.35rem 0.35rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-weight: bold;
+  }

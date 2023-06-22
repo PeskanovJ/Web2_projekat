@@ -194,8 +194,6 @@ namespace Projekat_Backend.Controllers
                 return Problem(detail: result.Message, statusCode: (int)result.Status);
         }
 
-
-
         [HttpGet("resetPassword")]
         public async Task<IActionResult> ResetPassword(Guid guid)
         {
@@ -224,80 +222,57 @@ namespace Projekat_Backend.Controllers
             return Ok();
         }
 
-        //[HttpGet("profile")]
-        //public IActionResult Profil(string? email)
-        //{
-        //    if (email == null)
-        //        return RedirectToAction("Login", "Account");
-        //    ProfileDTO profileDTO = _userService.GetProfile(email).Data;
+        [HttpPost("updateUser")]
+        public async Task<IActionResult> UpdateUser([FromForm] UserDTO UserDTO, IFormFile? file = null)
+        {
+            if (ModelState.IsValid)
+            {
+                string filePath;
+                string avatar=String.Empty; 
+                if (file != null && file.Length > 0)
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
 
-        //    return Ok(profileDTO);
-        //}
+                    string uploadPath = "Avatars";
+                    Console.WriteLine(uploadPath);
 
+                    if (!Directory.Exists(uploadPath))
+                    {
+                        Directory.CreateDirectory(uploadPath);
+                    }
 
-        //Todo
-        //[HttpPost]
-        //[ActionName("Profil")]
-        //public IActionResult Profil(ProfileDTO profileDTO, IFormFile? file)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        //string wwwRootPath = _hostEnviroment.WebRootPath;
-        //        //if (file != null)
-        //        //{
-        //        //    ResponsePackage<ProfileDTO> profile = _userService.GetProfile(profileDTO.Email);
-        //        //    string fileName = Guid.NewGuid().ToString();
-        //        //    var uploads = Path.Combine(wwwRootPath, @"img\profilePictures");
-        //        //    var extension = Path.GetExtension(file.FileName);
+                    filePath = Path.Combine(uploadPath, fileName);
 
-        //        //    if (profile.Data.ProfileUrl != null)
-        //        //    {
-        //        //        var oldImagePath = Path.Combine(wwwRootPath, profile.Data.ProfileUrl.TrimStart('\\'));
-        //        //        if (System.IO.File.Exists(oldImagePath) && oldImagePath.Substring(oldImagePath.LastIndexOf("profilePictures")) != "profilePictures\\img_avatar.png")
-        //        //        {
-        //        //            System.IO.File.Delete(oldImagePath);
-        //        //        }
-        //        //    }
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
 
+                    
+                }
+                else
+                    filePath = String.Empty;
 
-        //            //using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
-        //            //{
-        //            //    file.CopyTo(fileStreams);
-        //            //}
-        //            //profileDTO.ProfileUrl = @"\img\profilePictures\" + fileName + extension;
-        //        //}
+                var task = _userService.UpdateProfile(UserDTO, filePath);
+                if (task.Status == ResponseStatus.OK)
+                {
+                   
+                    return Ok(task.Data);
+                }
+                else if (task.Status == ResponseStatus.InternalServerError)
+                {
+                    if (System.IO.File.Exists(filePath) && file != null)
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    return Problem(task.Message, statusCode: ((int)task.Status));
+                }
+                else
+                    return Problem(task.Message, statusCode: ((int)task.Status));
+            }
+            return Problem("Entered values not valid", statusCode: (int)ResponseStatus.BadRequest);
 
-        //        ResponsePackage<bool> response = _userService.UpdateProfile(profileDTO);
-        //        if (response.Status == ResponseStatus.OK)
-        //        {
-        //            //notification that password is reset
-        //            //if (HttpContext.Request.Cookies["LoginCookieFullName"] != null)
-        //            //{
-        //            //    var cookieOptions = new CookieOptions();
-        //            //    cookieOptions.Expires = DateTime.Now.AddDays(365);
-        //            //    cookieOptions.Path = "/";
-        //            //    HttpContext.Response.Cookies.Append("LoginCookieFullName", profileDTO.FirstName + " " + profileDTO.LastName, cookieOptions);
-        //            //    HttpContext.Response.Cookies.Append("LoginCookieEmail", profileDTO.Email, cookieOptions);
-        //            //    if (file != null)
-        //            //        HttpContext.Response.Cookies.Append("LoginCookieAvatar", profileDTO.ProfileUrl, cookieOptions);
-        //            //}
-        //            //if (HttpContext.Session.Get("FullName") != null)
-        //            //{
-        //            //    HttpContext.Session.SetString("FullName", profileDTO.FirstName + " " + profileDTO.LastName);
-        //            //    HttpContext.Session.SetString("Avatar", profileDTO.ProfileUrl);
-        //            //}
-
-
-        //            return RedirectToAction("Index", "Home");
-        //        }
-        //        else
-        //        {
-        //            ModelState.AddModelError(string.Empty, response.Message);
-        //            return NotFound();
-        //        }
-        //    }
-        //    return Ok();
-        //}
+        }
 
     }
 }
