@@ -40,12 +40,12 @@ const DashBoardItem = (props) => {
     <li className={classes.item}>
       <div>
         <h3>{props.name}</h3>
-        <img className={classes.picture} src={imageURL} alt="Item picture"/>
+        <img className={classes.picture} src={imageURL} alt="Item"/>
         <div className={classes.description}>{props.description}</div>
         <div className={classes.price}>{props.price}$</div>
       </div>
       <div>
-        {ctx.user.Role==1 && (<AddItemForm onAddToCart={addToCartHandler}>Add to Cart</AddItemForm>)}
+        {ctx.user.Role===1 && (<AddItemForm onAddToCart={addToCartHandler}>Add to Cart</AddItemForm>)}
         <div className={classes.amount}>{props.amount>0 ? (<>Items remaining : {props.amount}</>) :(<b>Out of stock</b>)} </div>
       </div>
     </li>

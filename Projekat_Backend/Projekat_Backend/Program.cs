@@ -8,6 +8,7 @@ using Shared.Common;
 using AutoMapper;
 using BLL.Services.Mapping;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -31,6 +32,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAuthentication(opt => {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddGoogle("Google", options =>
+{
+    options.ClientId = "56381202791-epanc1l1qkuqj5ah9hm84v383f6og7c4.apps.googleusercontent.com";
+    options.ClientSecret = "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";
 })
 .AddJwtBearer(options =>
 {

@@ -1,5 +1,6 @@
 import React,{useState ,useEffect, useContext,useRef }  from "react";
 import axios from 'axios';
+import {GoogleLogin} from '@react-oauth/google'
 
 import classes from "./Form.module.css";
 import Modal from "../UI/Modal/Modal";
@@ -8,6 +9,8 @@ import Input from '../UI/Input/Input'
 import Button from "../UI/Button/Button";
 
 const RegisterForm = (props) => {
+    const [isFormVisible, setIsFormVisible] = useState(false);
+    const [isGoogleFormVisible, setIsGoogleFormVisible] = useState(false);
     const [enteredEmail, setEnteredEmail] = useState('');
     const [enteredPassword, setEnteredPassword] = useState('');
     const [enteredPasswordRepeat, setEnteredPasswordRepeat] = useState('');
@@ -36,12 +39,14 @@ const RegisterForm = (props) => {
       };
     }, [emailIsValid,passwordIsValid,passwordRepeatIsValid]);
   
-
-    useEffect(()=>{
-      const button = document.getElementById('register');
-      button.disabled = false;
-      button.textContent= 'Register';
-    }, []);
+    const toggleFormVisibility = () => {
+      setIsFormVisible((prevState) => !prevState);
+      setIsGoogleFormVisible(false);
+    };
+    const toggleGoogleFormVisibility = () => {
+      setIsGoogleFormVisible((prevState) => !prevState);
+      setIsFormVisible(false);
+    };
   
     const emailChangeHandler = (event) => {
         setEnteredEmail(event.target.value);
@@ -131,11 +136,44 @@ const RegisterForm = (props) => {
         passwordRepeatInputRef.current.focus();
       }
     };
+
+    const registerHandler = async (response) => {
+      let radio = document.getElementById('accType').value;
+      let selectedOption;
+      if(radio == 'Buyer')
+        selectedOption='buyer';
+      else
+        selectedOption='seller'
+      await axios
+        .post(
+          process.env.REACT_APP_SERVER_URL + "users/googleRegister",
+          JSON.stringify({googleAccessToken:response.credential, role:selectedOption}),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then(function (apiResponse) {
+          if(apiResponse.data===true)
+            alert('User successfully registered');
+          props.onClose();
+        })
+        .catch(function (error) {
+          alert(error.response.data.detail);
+         
+        });
+    };
   
   return (
     <Modal onClose={props.onClose} className={classes.login}>
+    <center><h3>Register</h3>
+      <button onClick={toggleFormVisibility}>
+      {isFormVisible ? 'Hide Normal register' : 'Normal register'}
+      </button>
+    </center>
+    {isFormVisible && (
       <form onSubmit={submitHandler}>
-        <center><h3>Register</h3></center>
         <Input id='username' label='Username' type="text"  />
         <Input id='firstname' label='Firstname' type="text"  />
         <Input id='lastname' label='Lastname' type="text"  />
@@ -151,8 +189,27 @@ const RegisterForm = (props) => {
           <Button type="submit" id='register' className={classes.btn} >
             Register
           </Button>
+
+         
+          
         </div>
       </form>
+    )}
+      <hr/>
+      <center>
+        <button onClick={toggleGoogleFormVisibility}>
+        {isGoogleFormVisible ? 'Hide Google register' : 'Google register'}
+        </button>
+      </center>
+      {isGoogleFormVisible && (
+      <center>
+        <div id="accType">
+        <input type="radio" value="Buyer" name="accType" defaultChecked /> Kupac
+        <input type="radio" value="Seller" name="accType" /> Prodavac
+        </div>
+        <GoogleLogin onSuccess={registerHandler} /> 
+      </center>
+      )}
     </Modal>
   );
 };

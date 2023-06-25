@@ -9,6 +9,10 @@
   text-align: center;
 }
 
+.googleBtn{
+  border-radius: 50px;
+}
+
 @media (min-width: 768px) {
   .control {
     align-items: center;

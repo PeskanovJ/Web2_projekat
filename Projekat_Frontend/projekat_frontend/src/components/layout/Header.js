@@ -36,12 +36,12 @@ const Header = (props) => {
             <ul>
               {ctx.isLoggedIn ? (
                 <>
-                  {ctx.user.Role == 1 ? (
+                  {ctx.user.Role === 1 ? (
                     <Link to="/myOrders">
                       <Button>My orders</Button>
                     </Link>
                   ) : null}
-                  {ctx.user.Role == 2 && ctx.user.IsVerified ? 
+                  {ctx.user.Role === 2 && ctx.user.IsVerified ? 
                   (
                    <div className={classes.dropdown}>
                     <Button onClick={toggleDropdown}>Actions</Button>
@@ -61,7 +61,7 @@ const Header = (props) => {
                       )}
                     </div>  
                   ) : null}
-                  {ctx.user.Role == 3 ? 
+                  {ctx.user.Role === 3 ? 
                   (
                    <div className={classes.dropdown}>
                     <Button onClick={toggleDropdown}>Actions</Button>
@@ -86,7 +86,7 @@ const Header = (props) => {
         <div className={classes.content}>
           {ctx.isLoggedIn ? (
             <>
-              {ctx.user.Role == 1 ? (
+              {ctx.user.Role === 1 ? (
                 <HeaderCartButton onClick={props.onShowCart} />
               ) : null}
               <div className={classes.dropdown}>

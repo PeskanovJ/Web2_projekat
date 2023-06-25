@@ -12,7 +12,7 @@ const OrderHistory = () => {
 
   useEffect(() => {
     ctx.onFetchHistory();
-  }, []);
+  });
 
   return (
     <Fragment>

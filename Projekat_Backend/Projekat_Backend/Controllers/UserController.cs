@@ -20,7 +20,7 @@ namespace Projekat_Backend.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody]LoginDTO LoginDTO)
+        public async Task<IActionResult> Login([FromBody] LoginDTO LoginDTO)
         {
             if (ModelState.IsValid)
             {
@@ -30,13 +30,55 @@ namespace Projekat_Backend.Controllers
                     return Ok(response.Data);
                 else
                 {
-                    return Problem(response.Message,statusCode:((int)response.Status));
+                    return Problem(response.Message, statusCode: (int)response.Status);
                 }
             }
             else
             {
                 return Problem("Entered values not valid", statusCode: (int)ResponseStatus.BadRequest);
             }
+        }
+
+
+        [HttpPost("googleLogin")]
+        public async Task<IActionResult> GoogleLogin([FromBody] string googleAccessToken = null)
+        {
+            if (!string.IsNullOrEmpty(googleAccessToken))
+            {
+                ResponsePackage<ProfileDTO> response = await _userService.GoogleLogin(googleAccessToken);
+                if (response.Status == ResponseStatus.OK)
+                    return Ok(response.Data);
+                else
+                {
+                    return Problem(response.Message, statusCode: (int)response.Status);
+                }
+            }
+            return BadRequest();
+            
+        }
+
+        [HttpPost("googleRegister")]
+        public async Task<IActionResult> GoogleRegister([FromBody] GoogleRegisterToken googleRegisterDTO)
+        {
+            if (!string.IsNullOrEmpty(googleRegisterDTO.GoogleAccessToken))
+            {
+                ResponsePackage<bool> response;
+                if (googleRegisterDTO.Role == "buyer")
+                   response = await _userService.GoogleRegister(googleRegisterDTO.GoogleAccessToken, SD.Roles.Buyer);
+                else if (googleRegisterDTO.Role == "seller")
+                   response = await _userService.GoogleRegister(googleRegisterDTO.GoogleAccessToken, SD.Roles.Seller);
+                else
+                   return BadRequest();
+
+                if (response.Status == ResponseStatus.OK)
+                    return Ok(response.Data);
+                else
+                {
+                    return Problem(response.Message, statusCode: (int)response.Status);
+                }
+            }
+            return BadRequest();
+
         }
 
         [HttpPost("registerBuyer")]
